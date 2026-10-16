@@ -2,7 +2,7 @@
 
 A pack is one JSON file that can hold **themes** (colours and style), **shapes** (a form the graph is pulled into) and **layouts** (a named bundle of forces that picks a shape and a theme). A pack contains **data only, never code**: it cannot read your notes, touch the network or run anything. Every pack is checked on import and every problem is reported with its path.
 
-Example packs: [docs/packs/](packs/) (a heart, a spiral galaxy, a stylised brain, a trefoil knot, a spider and a spider web, a honeycomb, and a solar system whose planets are your most-connected notes). `bench/generate-shape-packs.mjs` draws the last four as data, so you can see how. Editor hints: [packs/fgpack.schema.json](packs/fgpack.schema.json) (the plugin's own checker is the authority). Pack files are plain text under the same licence as this repository (0BSD) unless the pack says otherwise.
+Example packs: [docs/packs/](packs/) (a heart, a spiral galaxy, a stylised brain, a trefoil knot, a spider and a spider web, a honeycomb, a solar system whose planets are your most-connected notes, and an arc reactor). `bench/generate-shape-packs.mjs` draws the flat ones as data, so you can see how. Editor hints: [packs/fgpack.schema.json](packs/fgpack.schema.json) (the plugin's own checker is the authority). Pack files are plain text under the same licence as this repository (0BSD) unless the pack says otherwise.
 
 ## Top level
 ```json
@@ -109,4 +109,4 @@ The format, its checker and the example packs exist and are tested. Turning a sh
 ## How the shape pull behaves (learned from testing)
 - The pull acts on notes that are **outside** the shape's points. Notes already inside are free, so the shape works like the wall of a balloon: the repel force pushes notes outwards, the shape holds them in, and the inside fills up. For this to work the plugin sizes every shape a little smaller than the graph would naturally spread, and brings all shapes to the same reach first (a galaxy is wider than a heart).
 - Heart shapes work well. Shapes made of thin parts (a galaxy's arms, a brain's lobes) need a higher `shapeStrength` and are not yet as clear. Work in progress.
-- Selecting a layout also sets the flat or 3D view from its `dimensions`, uses its `forces` while it is active, and applies its `theme`.
+- Selecting a layout also sets the flat or 3D view from its `dimensions`, uses its `forces` while it is active, and applies its `theme`. The user can switch the theme off (setting "Use the shape's own colours"); the shape and forces stay, only the colours go back to the user's own look, so a theme should never be needed to understand a shape.

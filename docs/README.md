@@ -10,5 +10,5 @@
 - api-notes.md: Obsidian API notes and gotchas
 - open-questions.md: things not yet known
 - research/: Phase 0 research (version lock, sources, findings, checklists)
-- adr/: one short file per decision (0001 template; 0002 minAppVersion; 0003 embedded worker and wasm; 0004 IDs; 0005 layout API; 0006 Canvas 2D; 0007 filter pipeline; 0008 gravity; 0009 clustering; 0010 layout cache; 0011 skins; 0012 settings tab; 0013 3D view; 0014 settings page as the control centre; 0015 pack format; 0016 electrons and header gear; 0017 gentle drift; 0018 mouse buttons and click to focus; 0019 release layout; 0020 flat shapes, rank regions and the shape guide)
+- adr/: one short file per decision (0001 template; 0002 minAppVersion; 0003 embedded worker and wasm; 0004 IDs; 0005 layout API; 0006 Canvas 2D; 0007 filter pipeline; 0008 gravity; 0009 clustering; 0010 layout cache; 0011 skins; 0012 settings tab; 0013 3D view; 0014 settings page as the control centre; 0015 pack format; 0016 electrons and header gear; 0017 gentle drift; 0018 mouse buttons and click to focus; 0019 release layout; 0020 flat shapes, rank regions and the shape guide; 0021 shape colours switch and arc reactor)
 - screenshot-*.png, layout-spiral-artifact-range600.png: evidence referenced from the notes above

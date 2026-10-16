@@ -1,4 +1,4 @@
-// Draws the 2D example packs as data: spider and spider web, honeycomb, solar system.
+// Draws the 2D example packs as data: spider and spider web, honeycomb, solar system, arc reactor.
 // Repeatable (seeded). Usage: node bench/generate-shape-packs.mjs   (writes docs/packs/*.fgpack.json)
 // Coordinates: x right, y up, roughly within -1 and 1 (the plugin flips y for the flat view).
 import { writeFileSync, readFileSync } from 'node:fs';
@@ -120,6 +120,38 @@ const forces = (over = {}) => ({ centre: 0.2, repel: 5, link: 0.2, linkDistance:
 	});
 	writeFileSync(new URL('solar-system.fgpack.json', out), JSON.stringify(pack, null, 1) + '\n');
 	console.log('solar: sun', sunPts.length, 'planets', planets.length, 'planet points', planetPts.length, 'stars', starPts.length);
+}
+
+// ---------------- arc reactor ----------------
+{
+	const circle = (radius, step = 0.022) => { const n = Math.max(12, Math.round((2 * Math.PI * radius) / step)); return Array.from({ length: n }, (_, i) => { const a = (i / n) * Math.PI * 2; return pt(Math.cos(a) * radius, Math.sin(a) * radius); }); };
+	const polar = (radius, angle) => [Math.cos(angle) * radius, Math.sin(angle) * radius];
+	const arc = (radius, a0, a1, step = 0.022) => { const n = Math.max(2, Math.round((radius * Math.abs(a1 - a0)) / step)); return Array.from({ length: n + 1 }, (_, i) => pt(...polar(radius, a0 + ((a1 - a0) * i) / n))); };
+	const frame = [];
+	frame.push(...circle(0.96), ...circle(0.9)); // the double outer ring
+	frame.push(...circle(0.4), ...circle(0.34)); // the double inner ring
+	frame.push(...circle(0.2, 0.026)); // the core
+	frame.push(...along([0, 1, 2, 3].map((i) => polar(0.3, Math.PI / 2 + (i % 3) * ((2 * Math.PI) / 3))), 0.022)); // the triangle inside
+	const coilCentres = [];
+	for (let k = 0; k < 10; k++) {
+		const mid = Math.PI / 2 - (k * 2 * Math.PI) / 10, half = (12 * Math.PI) / 180; // ten coil blocks, 24 degrees wide with a gap between
+		const rIn = 0.5, rOut = 0.8;
+		frame.push(...arc(rIn, mid - half, mid + half), ...arc(rOut, mid - half, mid + half));
+		frame.push(...along([polar(rIn, mid - half), polar(rOut, mid - half)], 0.022), ...along([polar(rIn, mid + half), polar(rOut, mid + half)], 0.022));
+		coilCentres.push(pt(...polar(0.65, mid)));
+	}
+	const framePts = dedupe(frame, 0.012);
+	const pack = base('arc-reactor', 'Arc reactor', 'An arc reactor: a double outer ring, ten coil blocks, an inner ring and a glowing core. Your most-connected note is the core and the next ten sit on the coils; every other note lines the rings.', {
+		themes: [{ id: 'reactor', name: 'Reactor', base: '#01070d', nodeColours: ['#0f4c63', '#1b88a8', '#46d4ff', '#9be9ff', '#e6fbff', '#ffffff'], link: { colour: '#37c8f5', alpha: 0.12, curved: false, pulses: false }, accent: '#bff3ff', label: '#d6f6ff', glow: true, starfield: false, animated: true, backdrop: { colours: ['#052a3d', '#031a2a'], seed: 12 } }],
+		shapes: [{ id: 'reactor-frame', name: 'Arc reactor', kind: 'points', points: [], regions: [
+			{ name: 'Core', match: 'top:1', exclusive: true, points: [pt(0, 0)] },
+			{ name: 'Coils', match: 'top:11', exclusive: true, points: coilCentres },
+			{ name: 'Rings', match: 'degree>=0', points: framePts },
+		] }],
+		layouts: [{ id: 'arc-reactor-2d', name: 'Arc reactor (2D)', dimensions: 2, shape: 'reactor-frame', theme: 'reactor', guide: true, forces: forces({ repel: 3, link: 0.1, gravity: 0.03 }) }],
+	});
+	writeFileSync(new URL('arc-reactor.fgpack.json', out), JSON.stringify(pack, null, 1) + '\n');
+	console.log('arc reactor: ring points', framePts.length, 'coil spots', coilCentres.length);
 }
 
 // ---------------- spiral galaxy, flat ----------------

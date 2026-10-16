@@ -236,3 +236,35 @@ test('flat galaxy layout exists and uses the same spiral as the 3D one', () => {
 	assert.equal(flat?.shape, solid?.shape);
 	assert.equal(flat?.theme, solid?.theme);
 });
+
+test('arc reactor: a core at the centre, ten coil spots evenly round a ring, rings of the right sizes', () => {
+	const pack = load('arc-reactor');
+	const shape = shapeOf(pack, 'reactor-frame');
+	assert.equal(shape.kind, 'points');
+	const r = compile(pack, 'reactor-frame');
+	assert.deepEqual(r.regionNames, ['Core', 'Coils', 'Rings']);
+	const region = r.regionOf as Uint8Array;
+	const pts = (k: number) => {
+		const out: number[][] = [];
+		for (let i = 0; i < region.length; i++) if (region[i] === k) out.push([r.points[3 * i] as number, r.points[3 * i + 1] as number]);
+		return out;
+	};
+	const core = pts(0);
+	const coils = pts(1);
+	const rings = pts(2);
+	assert.deepEqual(core, [[0, 0]]);
+	assert.ok(shape.kind === 'points' && shape.regions[0]!.exclusive && shape.regions[1]!.exclusive && !shape.regions[2]!.exclusive);
+	assert.equal(coils.length, 10);
+	for (const c of coils) assert.ok(Math.abs(Math.hypot(c[0]!, c[1]!) - 0.65) < 0.002);
+	// evenly spaced: neighbouring coil spots are all the same distance apart
+	const gaps = coils.map((c, i) => Math.hypot(c[0]! - coils[(i + 1) % 10]![0]!, c[1]! - coils[(i + 1) % 10]![1]!));
+	assert.ok(Math.max(...gaps) - Math.min(...gaps) < 0.005, String(gaps));
+	assert.ok(rings.length > 1000 && rings.length < 2000, `${rings.length}`);
+	assert.ok(Math.max(...rings.map((p) => Math.hypot(p[0]!, p[1]!))) <= 0.97);
+	// the double outer ring: lots of points near radius 0.96 and 0.9, and nothing between 0.82 and 0.88
+	const near = (radius: number) => rings.filter((p) => Math.abs(Math.hypot(p[0]!, p[1]!) - radius) < 0.004).length;
+	assert.ok(near(0.96) > 200 && near(0.9) > 200 && near(0.4) > 80 && near(0.34) > 70);
+	assert.equal(rings.filter((p) => { const d = Math.hypot(p[0]!, p[1]!); return d > 0.82 && d < 0.88; }).length, 0);
+	// the coil spots sit inside the blocks: between the inner and outer coil radius and clear of the other rings
+	for (const c of coils) assert.ok(rings.every((p) => Math.hypot(p[0]! - c[0]!, p[1]! - c[1]!) > 0.05), 'a coil spot touches a ring');
+});

@@ -631,7 +631,8 @@ export class GraphView extends ItemView {
 		this.renderer?.setLook(s.look);
 		this.renderer3d?.setLook(s.look);
 		const entry = this.activeLayout();
-		const theme = entry?.layout.theme ? entry.pack.themes.find((t) => t.id === entry.layout.theme) : undefined;
+		// The shape's own colours, unless the user turned them off.
+		const theme = s.shapeColours && entry?.layout.theme ? entry.pack.themes.find((t) => t.id === entry.layout.theme) : undefined;
 		const skin = theme ? themeToSkin(theme) : getSkin(s.skin);
 		this.renderer?.setSkin(skin);
 		this.renderer?.setEffects(s.skinEffects);

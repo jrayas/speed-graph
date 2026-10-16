@@ -19,7 +19,7 @@ A graph view for Obsidian that stays smooth on very large vaults (10,000 notes a
 - **Motion effects** for the whole graph: heartbeat (with a lub-dub and an "active" mode), breathing, vibrate, a frightened flinch, panic, and a shockwave when you open or edit a note.
 - A **3D view** (WebGL2): drag to turn, scroll to zoom, right-drag to slide.
 - **Skins** drawn by code, not images: Galaxy and a stylised Brain.
-- **Shape layouts**: pull the graph into a heart, a spiral galaxy (flat or 3D), a brain, a trefoil knot, a spider, a spider web, a honeycomb, a **solar system** (your most-connected notes become the sun and eight planets on their own orbits; every other note is a star), or a shape from a pack you import. An optional faint dotted guide draws the shape behind the notes.
+- **Shape layouts**: pull the graph into a heart, a spiral galaxy (flat or 3D), a brain, a trefoil knot, a spider, a spider web, a honeycomb, a **solar system** (your most-connected notes become the sun and eight planets on their own orbits; every other note is a star), an **arc reactor** (the most-connected note is the core, the next ten sit on the coils), or a shape from a pack you import. Each shape brings its own colours; switch "Use the shape's own colours" off to keep your normal look or your chosen skin. An optional faint dotted guide draws the shape behind the notes.
 - Brightness, colour, glow, label and 3D camera controls.
 
 Everything in the settings page has a short description. Extras never change the default graph.

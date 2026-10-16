@@ -134,6 +134,7 @@ export class FastGraphSettingTab extends PluginSettingTab {
 						control: { type: 'dropdown', key: 'activeLayout', options: this.layoutOptions() },
 					},
 					this.slider('Shape strength', 'How firmly notes are pulled into the shape. Low keeps more of the link structure; high follows the shape closely.', 'shapeStrength', RANGES.shapeStrength, () => this.s.activeLayout !== '', percent),
+					this.toggle('Use the shape\'s own colours', 'A shape layout comes with its own colours, such as gold for the honeycomb or cyan for the arc reactor. Turn this off to keep your normal look, or the skin you chose, while the shape is active.', 'shapeColours', () => this.s.activeLayout !== ''),
 					this.toggle('Show the shape as a faint guide', 'Draws the shape of the active layout as a faint dotted outline behind the notes (flat view). Line-art shapes such as a web or a honeycomb ask for it themselves. Off by default.', 'shapeGuide', () => this.s.activeLayout !== ''),
 					{
 						name: 'Import a pack',

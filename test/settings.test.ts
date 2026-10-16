@@ -83,3 +83,10 @@ test('the look section is merged, validated and independent of the shared defaul
 	assert.equal(b.look.brightness, 1);
 	assert.equal(DEFAULT_SETTINGS.look.brightness, 1);
 });
+
+test('shape colours: on by default, and a saved off is kept', () => {
+	assert.equal(DEFAULT_SETTINGS.shapeColours, true);
+	assert.equal(mergeSettings({}).shapeColours, true);
+	assert.equal(mergeSettings({ shapeColours: false }).shapeColours, false);
+	assert.equal(mergeSettings({ shapeColours: 'no' }).shapeColours, true); // not a boolean: ignored
+});
