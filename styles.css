@@ -1,0 +1,122 @@
+.fast-graph-view {
+	position: relative;
+	overflow: hidden;
+	padding: 0;
+}
+
+.fast-graph-canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+	touch-action: none;
+	cursor: grab;
+}
+
+.fast-graph-canvas.is-hovering {
+	cursor: pointer;
+}
+
+.fast-graph-canvas.is-panning {
+	cursor: grabbing;
+}
+
+.fast-graph-status {
+	position: absolute;
+	left: var(--size-4-2);
+	bottom: var(--size-4-2);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+	pointer-events: none;
+}
+
+.fast-graph-controls {
+	position: absolute;
+	top: var(--size-4-2);
+	right: var(--size-4-2);
+	max-height: calc(100% - var(--size-4-4));
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: var(--size-4-1);
+}
+
+.fast-graph-controls-body {
+	width: 280px;
+	max-width: 80vw;
+	overflow-y: auto;
+	padding: var(--size-4-2) var(--size-4-3);
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+}
+
+.fast-graph-controls.is-collapsed .fast-graph-controls-body {
+	display: none;
+}
+
+.fast-graph-hover {
+	position: absolute;
+	left: var(--fg-x, 0);
+	top: var(--fg-y, 0);
+	max-width: 230px;
+	padding: var(--size-4-1) var(--size-4-2);
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow-s);
+	pointer-events: none;
+}
+
+.fast-graph-hover.is-hidden {
+	display: none;
+}
+
+.fast-graph-hover-title {
+	font-weight: var(--font-semibold);
+	overflow-wrap: anywhere;
+}
+
+.fast-graph-hover-path,
+.fast-graph-hover-meta {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	overflow-wrap: anywhere;
+}
+
+.fast-graph-groups .setting-item {
+	padding: var(--size-4-1) 0;
+}
+
+/* 3D view: a WebGL canvas and a label overlay sit under the (transparent) 2D canvas, which keeps catching the pointer. */
+.fast-graph-gl,
+.fast-graph-overlay {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.fast-graph-gl {
+	z-index: 0;
+	background:
+		radial-gradient(circle at 25% 30%, var(--fg3d-bg-a, transparent), transparent 55%),
+		radial-gradient(circle at 78% 72%, var(--fg3d-bg-b, transparent), transparent 55%),
+		radial-gradient(circle at 60% 18%, var(--fg3d-bg-c, transparent), transparent 45%),
+		var(--fg3d-bg-base, transparent);
+}
+
+.fast-graph-overlay {
+	z-index: 1;
+	pointer-events: none;
+}
+
+.fast-graph-view.is-3d .fast-graph-canvas {
+	position: relative;
+	z-index: 2;
+}
+
+.fast-graph-status,
+.fast-graph-hover,
+.fast-graph-controls {
+	z-index: 3;
+}

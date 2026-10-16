@@ -1,0 +1,21 @@
+import { connect } from './cdp-lib.mjs';
+const main = await connect();
+const { send, ev, sleep } = main;
+await ev(`app.plugins.setEnable(true)`); await sleep(2000);
+await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
+for (let i = 0; i < 300; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.settled && l.view.sub !== null; })()`)) break; }
+const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+const ev2 = async (e) => { const r = await send('Runtime.evaluate', { expression: e, awaitPromise: true, returnByValue: true }); return r.result?.result?.value ?? r.result?.exceptionDetails?.exception?.description ?? r.result; };
+await ev(`(() => { const p = app.plugins.plugins['fast-graph']; p.graphSettings.activeLayout = 'heart/heart-flat'; p.graphSettings.shapeStrength = 1; 0; })()`);
+console.log('entry', await ev2(`!!${V}.activeLayout() && ${V}.activeLayout().key`));
+console.log('shape', await ev2(`(() => { const s = ${V}.buildShape(); return s ? { targets: s.targets.length, scale: s.scale, strength: s.strength, nodeRegions: s.nodeRegions.length } : null; })()`));
+console.log('before', await ev2(`(() => { const v = ${V}; return { p0: [v.positions[2*v.sub.ids[0]], v.positions[2*v.sub.ids[0]+1]], settled: v.settled, run: v.driver.running, wanted: v.driver.wanted, gen: v.driver.generation }; })()`));
+console.log('call', await ev2(`(async () => { try { const s = ${V}.buildShape(); await ${V}.driver.setShape(s, 1); return 'ok'; } catch (e) { return 'ERR ' + e.message; } })()`));
+await sleep(300);
+console.log('soon', await ev2(`(() => { const v = ${V}; return { p0: [v.positions[2*v.sub.ids[0]], v.positions[2*v.sub.ids[0]+1]], settled: v.settled, run: v.driver.running, wanted: v.driver.wanted }; })()`));
+await sleep(5000);
+console.log('after', await ev2(`(() => { const v = ${V}; return { p0: [v.positions[2*v.sub.ids[0]], v.positions[2*v.sub.ids[0]+1]], settled: v.settled, run: v.driver.running, wanted: v.driver.wanted, ms: v.driver.msPerTick }; })()`));
+console.log('geom', await ev2(`(() => { const v = ${V}; const p = v.positions; let n=0,sx=0,sy=0; for (const id of v.sub.ids) { sx+=p[2*id]; sy+=p[2*id+1]; n++; } const mx=sx/n,my=sy/n; let vx=0,vy=0; for (const id of v.sub.ids) { vx+=(p[2*id]-mx)**2; vy+=(p[2*id+1]-my)**2; } return [Math.sqrt(vx/n), Math.sqrt(vy/n)]; })()`));
+process.exit(0);

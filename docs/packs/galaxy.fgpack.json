@@ -1,0 +1,72 @@
+{
+  "format": "fast-graph-pack",
+  "version": 1,
+  "id": "galaxy",
+  "name": "Galaxy",
+  "author": "Fast Graph",
+  "license": "0BSD",
+  "description": "Blue-white stars with gold hubs on a deep nebula, arranged in a spiral.",
+  "themes": [
+    {
+      "id": "galaxy-theme",
+      "name": "Galaxy",
+      "base": "#03040a",
+      "nodeColours": [
+        "#8fb0ff",
+        "#b9ccff",
+        "#fff1d8",
+        "#ffdca0",
+        "#ffc070",
+        "#ff9a48"
+      ],
+      "link": {
+        "colour": "#6f93ff",
+        "alpha": 0.1,
+        "curved": false,
+        "pulses": false
+      },
+      "accent": "#ffe9a8",
+      "label": "#e8eeff",
+      "glow": true,
+      "starfield": true,
+      "animated": true,
+      "backdrop": {
+        "colours": [
+          "#2a1760",
+          "#0e3868",
+          "#5a1d4c",
+          "#123a8a"
+        ],
+        "seed": 7
+      }
+    }
+  ],
+  "shapes": [
+    {
+      "id": "spiral-galaxy",
+      "name": "Spiral galaxy",
+      "kind": "spiral",
+      "arms": 3,
+      "twist": 3.2,
+      "bulge": 0.14,
+      "thickness": 0.05
+    }
+  ],
+  "layouts": [
+    {
+      "id": "galaxy-3d",
+      "name": "Galaxy (3D)",
+      "dimensions": 3,
+      "shape": "spiral-galaxy",
+      "theme": "galaxy-theme",
+      "forces": {
+        "centre": 0.2,
+        "repel": 5,
+        "link": 0.2,
+        "linkDistance": 30,
+        "gravity": 0.05,
+        "shapeStrength": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "format": "fast-graph-pack",
+  "version": 1,
+  "id": "heart",
+  "name": "Heart",
+  "author": "Fast Graph",
+  "license": "0BSD",
+  "description": "A heart two ways: the classic outline curve filled into a pillow (best in 2D and 3D), and the solid heart formula (3D).",
+  "params": [
+    {
+      "id": "scale",
+      "name": "Size",
+      "default": 1,
+      "min": 0.6,
+      "max": 1.4,
+      "step": 0.05
+    }
+  ],
+  "themes": [
+    {
+      "id": "rose",
+      "name": "Rose",
+      "base": "#12060a",
+      "nodeColours": [
+        "#e8a0b4",
+        "#f0b3c4",
+        "#f7c6d3",
+        "#ff9db5",
+        "#ff7a9c",
+        "#ff4f7b"
+      ],
+      "link": {
+        "colour": "#ff9db5",
+        "alpha": 0.2,
+        "curved": true,
+        "pulses": true
+      },
+      "accent": "#ffe3ea",
+      "label": "#ffeef2",
+      "glow": true,
+      "starfield": false,
+      "animated": true,
+      "backdrop": {
+        "colours": [
+          "#5a1f35",
+          "#3a1030"
+        ],
+        "seed": 14
+      }
+    }
+  ],
+  "shapes": [
+    {
+      "id": "heart-pillow",
+      "name": "Heart (filled outline)",
+      "kind": "parametric",
+      "t": [
+        0,
+        6.2832
+      ],
+      "x": "scale*16*sin(t)^3/17",
+      "y": "scale*(13*cos(t) - 5*cos(2*t) - 2*cos(3*t) - cos(4*t))/17",
+      "samples": 2400,
+      "fill": {
+        "depth": 0.5,
+        "falloff": 0.45
+      }
+    },
+    {
+      "id": "heart-solid",
+      "name": "Heart (solid formula)",
+      "kind": "implicit",
+      "value": "(x^2 + 2.25*z^2 + y^2 - 1)^3 - x^2*y^3 - 0.1125*z^2*y^3",
+      "bounds": 1.6,
+      "resolution": 48
+    }
+  ],
+  "layouts": [
+    {
+      "id": "heart-flat",
+      "name": "Heart (2D)",
+      "dimensions": 2,
+      "shape": "heart-pillow",
+      "theme": "rose",
+      "forces": {
+        "shapeStrength": 0.7
+      }
+    },
+    {
+      "id": "heart-3d",
+      "name": "Heart (3D)",
+      "dimensions": 3,
+      "shape": "heart-pillow",
+      "theme": "rose",
+      "forces": {
+        "shapeStrength": 0.7
+      }
+    },
+    {
+      "id": "heart-3d-solid",
+      "name": "Heart (3D, solid formula)",
+      "dimensions": 3,
+      "shape": "heart-solid",
+      "theme": "rose"
+    }
+  ]
+}

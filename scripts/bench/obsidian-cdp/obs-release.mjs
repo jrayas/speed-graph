@@ -1,0 +1,40 @@
+// Installs nothing: checks a vault that has ONLY main.js, manifest.json and styles.css. Usage: node obs-release.mjs
+import { connect } from './cdp-lib.mjs';
+const main = await connect();
+const { send, ev, sleep } = main;
+const out = {};
+await ev(`app.plugins.setEnable(true)`); await sleep(2500);
+await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+const dir = '.obsidian/plugins/fast-graph';
+out.filesAtStart = await ev(`app.vault.adapter.list('${dir}').then((l) => l.files.map((f) => f.split('/').pop()).sort())`);
+out.loadedAtStart = await ev(`!!app.plugins.plugins['fast-graph']`);
+// hook every error, then reload the plugin so load-time errors are caught too
+await ev(`(() => { window.__errs = []; const ce = console.error; console.error = (...a) => { window.__errs.push(a.map(String).join(' ').slice(0, 300)); ce.apply(console, a); }; window.addEventListener('error', (e) => window.__errs.push('error: ' + e.message)); window.addEventListener('unhandledrejection', (e) => window.__errs.push('rejection: ' + String(e.reason))); 0; })()`);
+await ev(`app.plugins.disablePlugin('fast-graph').then(() => app.plugins.enablePlugin('fast-graph')); 0`); await sleep(3000);
+out.loadedAfterReload = await ev(`!!app.plugins.plugins['fast-graph']`);
+out.commands = await ev(`Object.values(app.commands.commands).filter((c) => c.id.startsWith('fast-graph:')).map((c) => c.id + ' = ' + c.name)`);
+await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
+const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+const settled = async (dim) => { for (let i = 0; i < 500; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.dim === ${dim} && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
+out.settled2d = await settled(2); await sleep(1000);
+out.status2d = await ev(`document.querySelector('.fast-graph-status')?.textContent`);
+const sd = (dim) => ev(`(() => { const v = ${V}; const p = v.positions; const d = ${dim}; let n = 0, sx = 0, sy = 0, sz = 0; for (const id of v.sub.ids) { sx += p[d*id]; sy += p[d*id+1]; if (d === 3) sz += p[d*id+2]; n++; } const mx = sx/n, my = sy/n, mz = sz/n; let vx = 0, vy = 0, vz = 0; for (const id of v.sub.ids) { vx += (p[d*id]-mx)**2; vy += (p[d*id+1]-my)**2; if (d === 3) vz += (p[d*id+2]-mz)**2; } return { n, sdX: +Math.sqrt(vx/n).toFixed(1), sdY: +Math.sqrt(vy/n).toFixed(1), sdZ: d === 3 ? +Math.sqrt(vz/n).toFixed(1) : null }; })()`);
+out.normal2d = await sd(2);
+// the built-in packs must be there with no files besides the three
+const apply = (key, strength, view3d) => ev(`(() => { const p = app.plugins.plugins['fast-graph']; const s = p.graphSettings; s.activeLayout = ${JSON.stringify(key)}; s.view3d = ${view3d}; s.shapeStrength = ${strength}; p.settingsListeners.forEach((f) => f()); 0; })()`);
+await ev(`app.setting.open(); app.setting.openTabById('fast-graph'); 0`); await sleep(2000);
+const st = await connect((t) => t.type === 'page' && t.title.startsWith('Settings'));
+out.layoutOptions = await st.ev(`[...document.querySelectorAll('.vertical-tab-content .setting-item')].find((e) => e.querySelector('.setting-item-name')?.textContent.trim() === 'Shape layout').querySelector('select').options.length`);
+out.settingGroups = await st.ev(`[...document.querySelectorAll('.vertical-tab-content .setting-item-heading .setting-item-name, .vertical-tab-content .setting-group-heading')].map((e) => e.textContent.trim()).slice(0, 12)`);
+await ev(`app.setting.close(); 0`); await sleep(500);
+await apply('heart/heart-flat', 1, false); out.settledHeart = await settled(2); await sleep(3000);
+out.heart2d = await sd(2);
+await apply('heart/heart-3d', 0.7, true); out.settled3d = await settled(3); await sleep(4000);
+out.heart3d = await sd(3);
+out.gl = await ev(`${V}.renderer3d.gl.getError()`);
+await apply('', 0.5, false); await sleep(500);
+out.errors = await ev(`JSON.stringify(window.__errs)`);
+out.filesAtEnd = await ev(`app.vault.adapter.list('${dir}').then((l) => ({ files: l.files.map((f) => f.split('/').pop()).sort(), folders: l.folders.map((f) => f.split('/').pop()) }))`);
+console.log(JSON.stringify(out, null, 1));
+process.exit(0);

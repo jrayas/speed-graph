@@ -1,0 +1,13 @@
+import { connect } from './cdp-lib.mjs';
+const main = await connect();
+const { ev, sleep } = main;
+await ev(`app.plugins.setEnable(true)`); await sleep(2000);
+await ev(`app.setting.open(); app.setting.openTabById('fast-graph'); 0`); await sleep(2000);
+const st = await connect((t) => t.type === 'page' && t.title.startsWith('Settings'));
+await st.ev(`(() => { window.__opt = []; const orig = Node.prototype.appendChild; Node.prototype.appendChild = function (n) { if (n instanceof HTMLOptionElement) window.__opt.push([n.value, n.text, new Error().stack.split('\\n').slice(2, 7).join(' | ')]); return orig.call(this, n); }; const o2 = HTMLSelectElement.prototype.add; HTMLSelectElement.prototype.add = function (n, b) { window.__opt.push(['ADD', n.value, n.text, new Error().stack.split('\\n').slice(2, 7).join(' | ')]); return o2.call(this, n, b); }; 0; })()`);
+await ev(`app.setting.openTabById('appearance'); 0`); await sleep(800);
+await ev(`app.setting.openTabById('fast-graph'); 0`); await sleep(1500);
+const r = await st.ev(`JSON.stringify(window.__opt.filter((o) => /Default|Off|None/.test(o.join(' '))).slice(0, 12), null, 1)`);
+console.log(r);
+console.log(await st.ev(`[...document.querySelectorAll('.vertical-tab-content select')].map((s) => [...s.options].map((o) => o.value + '=' + o.text).join(', '))`));
+process.exit(0);

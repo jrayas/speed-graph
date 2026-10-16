@@ -1,0 +1,250 @@
+{
+  "format": "fast-graph-pack",
+  "version": 1,
+  "id": "brain-stylised",
+  "name": "Brain (stylised)",
+  "author": "Fast Graph",
+  "license": "0BSD",
+  "description": "A stylised brain, not anatomically exact: two hemispheres with frontal, parietal, temporal and occipital lobes, a cerebellum and a brainstem. Edit each region's match to choose which notes live there, for example \"tag:#work\".",
+  "themes": [
+    {
+      "id": "brain-theme",
+      "name": "Brain",
+      "base": "#09050d",
+      "nodeColours": [
+        "#c98ba0",
+        "#e0a2b8",
+        "#f2bccd",
+        "#cfe3ff",
+        "#8fd0ff",
+        "#57c4ff"
+      ],
+      "link": {
+        "colour": "#78b8ff",
+        "alpha": 0.22,
+        "curved": true,
+        "pulses": true
+      },
+      "accent": "#ffd6e6",
+      "label": "#fbeaf0",
+      "glow": true,
+      "starfield": false,
+      "animated": true,
+      "backdrop": {
+        "colours": [
+          "#5a1f45",
+          "#2a1450",
+          "#4a1838"
+        ],
+        "seed": 21
+      }
+    }
+  ],
+  "shapes": [
+    {
+      "id": "brain-shape",
+      "name": "Brain",
+      "kind": "volume",
+      "smooth": 0.12,
+      "regions": [
+        {
+          "name": "Frontal lobe",
+          "match": "",
+          "solids": [
+            {
+              "type": "ellipsoid",
+              "at": [
+                0.32,
+                0.12,
+                0.62
+              ],
+              "size": [
+                0.34,
+                0.36,
+                0.36
+              ]
+            },
+            {
+              "type": "ellipsoid",
+              "at": [
+                -0.32,
+                0.12,
+                0.62
+              ],
+              "size": [
+                0.34,
+                0.36,
+                0.36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Parietal lobe",
+          "match": "",
+          "solids": [
+            {
+              "type": "ellipsoid",
+              "at": [
+                0.34,
+                0.38,
+                -0.12
+              ],
+              "size": [
+                0.34,
+                0.3,
+                0.34
+              ]
+            },
+            {
+              "type": "ellipsoid",
+              "at": [
+                -0.34,
+                0.38,
+                -0.12
+              ],
+              "size": [
+                0.34,
+                0.3,
+                0.34
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Occipital lobe",
+          "match": "",
+          "solids": [
+            {
+              "type": "ellipsoid",
+              "at": [
+                0.28,
+                0.12,
+                -0.72
+              ],
+              "size": [
+                0.28,
+                0.28,
+                0.26
+              ]
+            },
+            {
+              "type": "ellipsoid",
+              "at": [
+                -0.28,
+                0.12,
+                -0.72
+              ],
+              "size": [
+                0.28,
+                0.28,
+                0.26
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Temporal lobe",
+          "match": "",
+          "solids": [
+            {
+              "type": "ellipsoid",
+              "at": [
+                0.52,
+                -0.22,
+                0.12
+              ],
+              "size": [
+                0.2,
+                0.2,
+                0.48
+              ]
+            },
+            {
+              "type": "ellipsoid",
+              "at": [
+                -0.52,
+                -0.22,
+                0.12
+              ],
+              "size": [
+                0.2,
+                0.2,
+                0.48
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cerebellum",
+          "match": "",
+          "solids": [
+            {
+              "type": "ellipsoid",
+              "at": [
+                0.2,
+                -0.42,
+                -0.62
+              ],
+              "size": [
+                0.3,
+                0.2,
+                0.24
+              ]
+            },
+            {
+              "type": "ellipsoid",
+              "at": [
+                -0.2,
+                -0.42,
+                -0.62
+              ],
+              "size": [
+                0.3,
+                0.2,
+                0.24
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Brainstem",
+          "match": "",
+          "solids": [
+            {
+              "type": "capsule",
+              "from": [
+                0,
+                -0.25,
+                -0.1
+              ],
+              "to": [
+                0,
+                -0.85,
+                -0.3
+              ],
+              "radius": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "layouts": [
+    {
+      "id": "brain-3d",
+      "name": "Brain (3D)",
+      "dimensions": 3,
+      "shape": "brain-shape",
+      "theme": "brain-theme",
+      "forces": {
+        "centre": 0.2,
+        "repel": 6,
+        "link": 0.25,
+        "linkDistance": 30,
+        "gravity": 0.05,
+        "shapeStrength": 1
+      }
+    }
+  ]
+}

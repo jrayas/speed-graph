@@ -1,0 +1,14 @@
+# Docs index
+- architecture.md: data flow and modules
+- behaviour-spec.md: what we match from the built-in graph, what we chose, sources
+- layout-algorithm.md: d3-force model, additions (gravity, repel range) and deviations
+- data-format.md: IDs, node kinds, edges, tags, incremental updates
+- performance-plan.md: targets, how they are measured, results
+- comparison.md: the built-in graph measured against ours (10k and 25k), with caveats
+- dev-testing.md: running and driving a real Obsidian safely (isolated instance, debug port)
+- pack-format.md: the data-only pack format for themes, shapes and layouts; packs/ holds examples and the editor schema
+- api-notes.md: Obsidian API notes and gotchas
+- open-questions.md: things not yet known
+- research/: Phase 0 research (version lock, sources, findings, checklists)
+- adr/: one short file per decision (0001 template; 0002 minAppVersion; 0003 embedded worker and wasm; 0004 IDs; 0005 layout API; 0006 Canvas 2D; 0007 filter pipeline; 0008 gravity; 0009 clustering; 0010 layout cache; 0011 skins; 0012 settings tab; 0013 3D view; 0014 settings page as the control centre; 0015 pack format; 0016 electrons and header gear; 0017 gentle drift; 0018 mouse buttons and click to focus; 0019 release layout)
+- screenshot-*.png, layout-spiral-artifact-range600.png: evidence referenced from the notes above

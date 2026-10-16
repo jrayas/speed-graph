@@ -1,0 +1,10 @@
+{
+  "id": "fast-graph",
+  "name": "Fast Graph",
+  "version": "0.1.0",
+  "minAppVersion": "1.13.4",
+  "description": "Explore very large vaults in a graph view that stays smooth, with filters, local graph, optional 3D, shape layouts and gentle motion effects.",
+  "author": "Dominic",
+  "isDesktopOnly": false,
+  "authorUrl": "https://github.com/jrayas"
+}

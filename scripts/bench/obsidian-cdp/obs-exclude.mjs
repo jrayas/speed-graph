@@ -1,0 +1,32 @@
+// Exclude folders through the real settings page. Usage: node obs-exclude.mjs <screenshot dir>
+import { writeFileSync } from 'node:fs';
+import { connect } from './cdp-lib.mjs';
+const shotDir = process.argv[2];
+const main = await connect();
+const { send, ev, sleep } = main;
+const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+const out = {};
+await ev(`app.plugins.setEnable(true)`); await sleep(2000);
+await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+// two small folders made in the scratch vault only
+await ev(`(async () => { await app.vault.createFolder('Skip').catch(() => {}); await app.vault.createFolder('Skip/Deep').catch(() => {}); await app.vault.createFolder('Skip2').catch(() => {}); await app.vault.create('Skip/a.md', '[[b]] [[hub]]').catch(() => {}); await app.vault.create('Skip/Deep/b.md', '[[a]]').catch(() => {}); await app.vault.create('Skip2/c.md', '[[a]]').catch(() => {}); await app.vault.create('hub.md', '[[Skip/a]] [[Skip2/c]]').catch(() => {}); return 0; })()`); await sleep(2500);
+await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
+const settled = async () => { for (let i = 0; i < 400; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
+out.settled = await settled(); await sleep(800);
+const state = () => ev(`(() => { const v = ${V}; const m = v.host.getGraph().model; const names = []; for (let id = 0; id < v.capacity; id++) if (v.visible[id]) names.push(m.ids.pathOf(id)); return { visible: names.length, skip: names.filter((p) => p.startsWith('Skip/') || p.startsWith('Skip2/')), hub: names.includes('hub.md') }; })()`);
+out.before = await state();
+await ev(`app.setting.open(); app.setting.openTabById('fast-graph'); 0`); await sleep(2000);
+const st = await connect((t) => t.type === 'page' && t.title.startsWith('Settings'));
+const setArea = (value) => st.ev(`(() => { const row = [...document.querySelectorAll('.vertical-tab-content .setting-item')].find((e) => e.querySelector('.setting-item-name')?.textContent.trim() === 'Exclude folders'); if (!row) return 'no row'; const t = row.querySelector('textarea'); if (!t) return 'no textarea'; t.value = ${JSON.stringify(value)}; t.dispatchEvent(new Event('input', { bubbles: true })); t.dispatchEvent(new Event('change', { bubbles: true })); t.dispatchEvent(new Event('blur', { bubbles: true })); return 'ok'; })()`);
+out.rowFound = await setArea('Skip');
+await sleep(2500); await settled(); await sleep(500);
+out.saved = await ev(`app.plugins.plugins['fast-graph'].graphSettings.excludedFolders`);
+out.excludeSkip = await state();
+await send('Page.captureScreenshot', { format: 'png' }).then((r) => writeFileSync(`${shotDir}/exclude-skip.png`, Buffer.from(r.result.data, 'base64')));
+out.setBoth = await setArea('skip/deep\nSkip2'); await sleep(2500); await settled(); await sleep(500);
+out.excludeDeepAndSkip2 = await state();
+out.setNone = await setArea(''); await sleep(2500); await settled(); await sleep(500);
+out.restored = await state();
+console.log(JSON.stringify(out, null, 1));
+process.exit(0);

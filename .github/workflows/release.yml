@@ -1,0 +1,54 @@
+name: Release
+
+# Push a tag equal to the version in manifest.json (for example 0.1.0, no "v").
+# The workflow builds from source, records a build attestation and creates a DRAFT
+# release with the three files Obsidian installs. Read it, then publish the draft.
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Check that the tag matches the manifest version
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          if [ "$VERSION" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match manifest version ${VERSION}"; exit 1
+          fi
+
+      - name: Install, check and build
+        run: |
+          npm ci
+          npm run lint
+          npm test
+          npm run build
+
+      - name: Attest the build output
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+
+      - name: Create a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" main.js manifest.json styles.css \
+            --title "${GITHUB_REF_NAME}" --draft --generate-notes
