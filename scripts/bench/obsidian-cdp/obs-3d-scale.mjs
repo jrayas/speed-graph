@@ -5,34 +5,34 @@ import { connect } from './cdp-lib.mjs';
 const [expectedEdges, shotDir, label] = [Number(process.argv[2]), process.argv[3], process.argv[4]];
 const { send, ev, sleep, close } = await connect();
 await send('Performance.enable'); await send('HeapProfiler.enable');
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
 const metric = async (n) => (await send('Performance.getMetrics')).result.metrics.find((m) => m.name === n)?.value ?? 0;
 const gc = async () => { await send('HeapProfiler.collectGarbage'); await sleep(300); };
 const mb = (b) => +(b / 1048576).toFixed(1);
 const out = { label };
 await ev(`app.plugins.setEnable(true)`); await sleep(2000);
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-for (let i = 0; i < 1200; i++) { if ((await ev(`app.plugins.plugins['fast-graph'].vaultGraph.model.edges`)) === expectedEdges) break; await sleep(1000); }
-await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
-await ev(`app.commands.executeCommandById('fast-graph:clear-layout-cache')`); await sleep(1000);
+for (let i = 0; i < 1200; i++) { if ((await ev(`app.plugins.plugins['speed-graph'].vaultGraph.model.edges`)) === expectedEdges) break; await sleep(1000); }
+await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('speed-graph:clear-layout-cache')`); await sleep(1000);
 // open straight into 3D
-await ev(`(() => { const p = app.plugins.plugins['fast-graph']; p.graphSettings.view3d = true; p.graphSettings.skin = 'default'; })()`);
+await ev(`(() => { const p = app.plugins.plugins['speed-graph']; p.graphSettings.view3d = true; p.graphSettings.skin = 'default'; })()`);
 const monitor = () => ev(`(() => { clearInterval(window.__iv); window.__long = []; new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__long.push(Math.round(e.duration)); }).observe({ type: 'longtask' }); window.__gaps = []; let prev = performance.now(); window.__iv = setInterval(() => { const n = performance.now(); window.__gaps.push(n - prev); prev = n; }, 20); return 0; })()`);
 const stalls = () => ev(`({ longTasks: window.__long.length, longTaskMaxMs: Math.max(0, ...window.__long), maxTimerGapMs: Math.round(Math.max(...window.__gaps)), samples: window.__gaps.length })`);
 const openAndTime = async (which) => {
   await gc(); const heap0 = await metric('JSHeapUsedSize');
   await monitor(); const task0 = await metric('TaskDuration'); const script0 = await metric('ScriptDuration');
-  const t0 = Date.now(); await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
+  const t0 = Date.now(); await ev(`app.commands.executeCommandById('speed-graph:open-graph')`);
   let firstPositions = null, settled = null;
   for (let i = 0; i < 6000 && settled === null; i++) {
     await sleep(25);
-    const s = await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; if (!l) return null; const v = l.view; return { dim: v.dim, known: v.known.some((x) => x), settled: v.settled && v.sub !== null }; })()`);
+    const s = await ev(`(() => { const l = app.workspace.getLeavesOfType('speed-graph-view')[0]; if (!l) return null; const v = l.view; return { dim: v.dim, known: v.known.some((x) => x), settled: v.settled && v.sub !== null }; })()`);
     if (s && s.dim === 3 && s.known && firstPositions === null) firstPositions = Date.now() - t0;
     if (s && s.dim === 3 && s.settled) settled = Date.now() - t0;
   }
   const task1 = await metric('TaskDuration'); const script1 = await metric('ScriptDuration');
   const st = await stalls(); await sleep(1500); await gc(); const heap1 = await metric('JSHeapUsedSize');
-  const info = await ev(`(() => { const v = ${V}; return { cache: v.cacheInfo, nodes: v.sub ? v.sub.ids.length : 0, status: document.querySelector('.fast-graph-status').textContent }; })()`);
+  const info = await ev(`(() => { const v = ${V}; return { cache: v.cacheInfo, nodes: v.sub ? v.sub.ids.length : 0, status: document.querySelector('.speed-graph-status').textContent }; })()`);
   return { which, firstPositionsMs: firstPositions, settledMs: settled, mainThreadBusyMs: Math.round((task1 - task0) * 1000), scriptMs: Math.round((script1 - script0) * 1000), stallsWhileOpening: st, heapAddedMB: mb(heap1 - heap0), ...info };
 };
 out.cold = await openAndTime('cold');
@@ -54,7 +54,7 @@ out.interaction = { ...(await ev(`(() => { window.__stop = true; const f = [...w
 await ev(`${V}.renderer3d.fit(); 0`); await sleep(600);
 const shot = await send('Page.captureScreenshot', { format: 'png' }); writeFileSync(`${shotDir}/3d-scale-${label}.png`, Buffer.from(shot.result.data, 'base64'));
 // reopen: exact restore from the 3D cache
-await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(1000);
+await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(1000);
 out.cached = await openAndTime('cached');
 console.log(JSON.stringify(out, null, 1));
 close();

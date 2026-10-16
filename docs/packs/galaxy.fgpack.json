@@ -1,9 +1,9 @@
 {
-  "format": "fast-graph-pack",
+  "format": "speed-graph-pack",
   "version": 1,
   "id": "galaxy",
   "name": "Galaxy",
-  "author": "Fast Graph",
+  "author": "Anthirayas",
   "license": "0BSD",
   "description": "Blue-white stars with gold hubs on a deep nebula, arranged in a spiral.",
   "themes": [

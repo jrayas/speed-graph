@@ -6,12 +6,12 @@ const main = await connect();
 const { send, ev, sleep } = main;
 await ev(`app.plugins.setEnable(true)`); await sleep(2000);
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
-await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
-const settled = async (dim) => { for (let i = 0; i < 500; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.dim === ${dim} && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
+await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('speed-graph:open-graph')`);
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
+const settled = async (dim) => { for (let i = 0; i < 500; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('speed-graph-view')[0]; return !!l && l.view.dim === ${dim} && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
 await settled(2); await sleep(1000);
-const apply = (key, strength) => ev(`(() => { const p = app.plugins.plugins['fast-graph']; const s = p.graphSettings; s.activeLayout = ${JSON.stringify(key)}; s.view3d = true; s.shapeStrength = ${strength}; p.settingsListeners.forEach((f) => f()); 0; })()`);
+const apply = (key, strength) => ev(`(() => { const p = app.plugins.plugins['speed-graph']; const s = p.graphSettings; s.activeLayout = ${JSON.stringify(key)}; s.view3d = true; s.shapeStrength = ${strength}; p.settingsListeners.forEach((f) => f()); 0; })()`);
 for (const st of strengths.split(',')) {
 	await apply(layout, Number(st));
 	await settled(3); await sleep(4500);

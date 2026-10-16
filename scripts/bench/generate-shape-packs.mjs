@@ -26,7 +26,7 @@ function fillEllipse(cx, cy, rx, ry, step) {
 }
 const dedupe = (pts, eps = 0.012) => { const keep = []; for (const p of pts) if (!keep.some((q) => dist(p, q) < eps)) keep.push(p); return keep; };
 
-const base = (id, name, description, extra) => ({ format: 'fast-graph-pack', version: 1, id, name, author: 'Fast Graph', license: '0BSD', description, ...extra });
+const base = (id, name, description, extra) => ({ format: 'speed-graph-pack', version: 1, id, name, author: 'Anthirayas', license: '0BSD', description, ...extra });
 const forces = (over = {}) => ({ centre: 0.2, repel: 5, link: 0.2, linkDistance: 30, gravity: 0.05, shapeStrength: 1, ...over });
 
 // ---------------- spider and spider web ----------------

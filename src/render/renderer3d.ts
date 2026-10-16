@@ -222,8 +222,8 @@ export class Renderer3D {
 	private fxTime = 0;
 
 	constructor(container: HTMLElement) {
-		this.canvas = container.createEl('canvas', { cls: 'fast-graph-gl' });
-		this.overlay = container.createEl('canvas', { cls: 'fast-graph-overlay' });
+		this.canvas = container.createEl('canvas', { cls: 'speed-graph-gl' });
+		this.overlay = container.createEl('canvas', { cls: 'speed-graph-overlay' });
 		const gl = this.canvas.getContext('webgl2', { antialias: true, alpha: true, premultipliedAlpha: true });
 		const octx = this.overlay.getContext('2d');
 		if (!gl || !octx) {

@@ -10,7 +10,7 @@ rm -rf "$WORK/obs-data" "$WORK/obs-vault"
 mkdir -p "$WORK/obs-data"
 cp -R "$VAULT" "$WORK/obs-vault"
 # Give the copy its OWN plugin files (not a symlink to the repo), so the plugin's saved settings stay in the copy.
-PLUG="$WORK/obs-vault/.obsidian/plugins/fast-graph"
+PLUG="$WORK/obs-vault/.obsidian/plugins/speed-graph"
 if [ -L "$PLUG" ]; then
   SRC="$(readlink "$PLUG")"
   rm "$PLUG"; mkdir "$PLUG"

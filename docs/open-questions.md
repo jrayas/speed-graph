@@ -19,7 +19,7 @@ API and review:
 - Is a separate local-graph view type wanted, or one view type with a "local" mode?
 - Should we replicate "Excluded files" with our own setting, since there is no public API to read it?
 - Which subset of Obsidian search syntax must filters and groups support (path:, file:, tag:, plain text)?
-- Plugin name: "Fast graph" must be unique, must not contain "Obsidian"/"Plugin", and must not be a bare core feature name — confirm the final name and id before Phase 7.
+- Plugin name: "Speed graph" must be unique, must not contain "Obsidian"/"Plugin", and must not be a bare core feature name — confirm the final name and id before Phase 7.
 - Should we ask Obsidian (Discord `#community-directory`) about Rust in build verification before Phase 1 ends?
 - How do Obsidian's centre/repel/link-force/link-distance sliders map to d3 parameters? Observe in Phase 4; do not guess.
 - Obsidian's slider ranges and defaults (centre, repel, link force, link distance, node size, link thickness, text fade) are not documented. Ours are placeholders: repel = -3 x slider, centre 0 to 1, link distance 10 to 200 (default 30). Compare against the built-in graph's look in Phase 4/5 and decide.

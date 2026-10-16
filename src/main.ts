@@ -3,10 +3,10 @@ import { VaultGraph } from './data/vault-reader';
 import { builtinPacks } from './packs/builtin';
 import { PackStore, type PackIO } from './packs/store';
 import { mergeSettings, type GraphSettings } from './settings/settings';
-import { FastGraphSettingTab } from './settings/settings-tab';
+import { SpeedGraphSettingTab } from './settings/settings-tab';
 import { GraphView, VIEW_TYPE_GRAPH } from './view/graph-view';
 
-export default class FastGraphPlugin extends Plugin {
+export default class SpeedGraphPlugin extends Plugin {
 	private vaultGraph: VaultGraph | null = null;
 	private graphSettings: GraphSettings = mergeSettings(null);
 	private saveTimer = 0;
@@ -39,7 +39,7 @@ export default class FastGraphPlugin extends Plugin {
 				}),
 		);
 		this.addSettingTab(
-			new FastGraphSettingTab(this.app, this, {
+			new SpeedGraphSettingTab(this.app, this, {
 				settings: this.graphSettings,
 				packs,
 				readVaultFile: (path) => this.readVaultFile(path),
@@ -50,7 +50,7 @@ export default class FastGraphPlugin extends Plugin {
 				clearCache: () => this.clearLayoutCache(),
 			}),
 		);
-		this.addRibbonIcon('git-fork', 'Open fast graph', () => void this.openGraph());
+		this.addRibbonIcon('git-fork', 'Open speed graph', () => void this.openGraph());
 		this.addCommand({
 			id: 'clear-layout-cache',
 			name: 'Clear layout cache',
@@ -74,7 +74,7 @@ export default class FastGraphPlugin extends Plugin {
 					if (!dir || !(await adapter.exists(dir))) return [];
 					return (await adapter.list(dir)).files.map((f) => f.slice(f.lastIndexOf('/') + 1));
 				} catch (error) {
-					console.warn('[fast-graph] Could not list saved packs', error);
+					console.warn('[speed-graph] Could not list saved packs', error);
 					return [];
 				}
 			},
@@ -82,7 +82,7 @@ export default class FastGraphPlugin extends Plugin {
 				try {
 					return dir ? await adapter.read(file(name)) : null;
 				} catch (error) {
-					console.warn('[fast-graph] Could not read a saved pack', error);
+					console.warn('[speed-graph] Could not read a saved pack', error);
 					return null;
 				}
 			},
@@ -93,7 +93,7 @@ export default class FastGraphPlugin extends Plugin {
 					await adapter.write(file(name), text);
 					return true;
 				} catch (error) {
-					console.warn('[fast-graph] Could not save a pack', error);
+					console.warn('[speed-graph] Could not save a pack', error);
 					return false;
 				}
 			},
@@ -101,7 +101,7 @@ export default class FastGraphPlugin extends Plugin {
 				try {
 					if (dir && (await adapter.exists(file(name)))) await adapter.remove(file(name));
 				} catch (error) {
-					console.warn('[fast-graph] Could not remove a saved pack', error);
+					console.warn('[speed-graph] Could not remove a saved pack', error);
 				}
 			},
 		};
@@ -130,7 +130,7 @@ export default class FastGraphPlugin extends Plugin {
 			const adapter = this.app.vault.adapter;
 			return (await adapter.exists(path)) ? await adapter.readBinary(path) : null;
 		} catch (error) {
-			console.warn('[fast-graph] Could not read the layout cache', error);
+			console.warn('[speed-graph] Could not read the layout cache', error);
 			return null;
 		}
 	}
@@ -141,7 +141,7 @@ export default class FastGraphPlugin extends Plugin {
 		try {
 			await this.app.vault.adapter.writeBinary(path, data);
 		} catch (error) {
-			console.warn('[fast-graph] Could not save the layout cache', error);
+			console.warn('[speed-graph] Could not save the layout cache', error);
 		}
 	}
 
@@ -153,7 +153,7 @@ export default class FastGraphPlugin extends Plugin {
 			}
 			new Notice('Layout cache cleared. It will be saved again after the next layout settles.');
 		} catch (error) {
-			console.warn('[fast-graph] Could not clear the layout cache', error);
+			console.warn('[speed-graph] Could not clear the layout cache', error);
 			new Notice('Could not clear the layout cache. See the console.');
 		}
 	}

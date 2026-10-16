@@ -7,8 +7,8 @@ const send = (method, params = {}) => new Promise((res) => { const i = ++id; pen
 const ev = async (expr) => { const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true }); if (r.result.exceptionDetails) throw new Error(r.result.exceptionDetails.exception?.description); return r.result.result.value; };
 const mouse = (type, x, y, down) => send('Input.dispatchMouseEvent', { type, x, y, button: 'left', buttons: down ? 1 : 0, clickCount: 1 });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('fast-graph-view')[0], { focus: true })`); await sleep(500);
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('speed-graph-view')[0], { focus: true })`); await sleep(500);
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
 await ev(`${V}.fit(true)`); await sleep(500);
 const info = await ev(`(() => { const v = ${V}; const r = v.canvas.getBoundingClientRect(); const t = v.transform; let best=-1,bd=-1; for (let i=0;i<v.alive.length;i++){ if(!v.alive[i])continue; const x=v.positions[2*i]*t.k+t.x,y=v.positions[2*i+1]*t.k+t.y; if(x<60||y<60||x>r.width-60||y>r.height-60)continue; if(v.degrees[i]>bd){bd=v.degrees[i];best=i;} } return { id: best, sx: r.left+v.positions[2*best]*t.k+t.x, sy: r.top+v.positions[2*best+1]*t.k+t.y, k: t.k, left: r.left, top: r.top }; })()`);
 console.log('target', JSON.stringify(info));

@@ -17,7 +17,7 @@ export function builtinPacks(): Pack[] {
 	for (const raw of [galaxy, brain, heart, trefoil, spider, honeycomb, solar, reactor] as unknown[]) {
 		const result = validatePack(raw);
 		if (result.ok) out.push(result.pack);
-		else console.error('[fast-graph] A built-in pack is invalid', result.errors);
+		else console.error('[speed-graph] A built-in pack is invalid', result.errors);
 	}
 	return out;
 }

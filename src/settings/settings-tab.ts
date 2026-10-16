@@ -25,7 +25,7 @@ type Range = readonly [number, number, number];
  * Everything extra is off by default and every number starts neutral, so the graph looks and behaves
  * as it does without visiting this page.
  */
-export class FastGraphSettingTab extends PluginSettingTab {
+export class SpeedGraphSettingTab extends PluginSettingTab {
 	constructor(
 		app: App,
 		plugin: Plugin,
@@ -141,7 +141,7 @@ export class FastGraphSettingTab extends PluginSettingTab {
 						desc: this.importReport || 'Paste the text of a pack file below, then choose this row. You can also type the path of a pack file that is in your vault. Packs hold colours, shapes and layouts, never code.',
 						action: () => void this.importPack(),
 					},
-					{ name: 'Pack text or vault path', control: { type: 'textarea', key: 'importText', placeholder: '{ "format": "fast-graph-pack", ... }', rows: 6 } },
+					{ name: 'Pack text or vault path', control: { type: 'textarea', key: 'importText', placeholder: '{ "format": "speed-graph-pack", ... }', rows: 6 } },
 					...this.packRows(),
 				],
 			},

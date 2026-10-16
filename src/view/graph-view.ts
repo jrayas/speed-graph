@@ -33,7 +33,7 @@ import { buildControls, type ChangeKind } from './controls';
 import { pointerAction } from './pointer-mode';
 import { LayoutDriver } from './layout-driver';
 
-export const VIEW_TYPE_GRAPH = 'fast-graph-view';
+export const VIEW_TYPE_GRAPH = 'speed-graph-view';
 
 export interface GraphViewHost {
 	getGraph(): VaultGraph;
@@ -164,7 +164,7 @@ export class GraphView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Fast graph';
+		return 'Speed graph';
 	}
 
 	getIcon(): string {
@@ -174,10 +174,10 @@ export class GraphView extends ItemView {
 	async onOpen(): Promise<void> {
 		const root = this.contentEl;
 		root.empty();
-		root.addClass('fast-graph-view');
-		this.canvas = root.createEl('canvas', { cls: 'fast-graph-canvas' });
-		this.statusEl = root.createDiv({ cls: 'fast-graph-status', text: 'Loading graph…' });
-		this.hoverEl = root.createDiv({ cls: 'fast-graph-hover is-hidden' });
+		root.addClass('speed-graph-view');
+		this.canvas = root.createEl('canvas', { cls: 'speed-graph-canvas' });
+		this.statusEl = root.createDiv({ cls: 'speed-graph-status', text: 'Loading graph…' });
+		this.hoverEl = root.createDiv({ cls: 'speed-graph-hover is-hidden' });
 		// The settings gear lives in the pane header, left of the "more options" dots, like other views' actions.
 		this.gearEl = this.addAction('settings', 'Graph settings', () => this.togglePanel());
 		this.renderer = new CanvasRenderer(this.canvas);
@@ -226,7 +226,7 @@ export class GraphView extends ItemView {
 			this.worker = new GraphWorker();
 			await this.worker.start();
 		} catch (error) {
-			console.error('[fast-graph] Could not start the layout worker', error);
+			console.error('[speed-graph] Could not start the layout worker', error);
 			this.statusEl.setText('Could not start the layout worker. See the console.');
 			return;
 		}
@@ -731,7 +731,7 @@ export class GraphView extends ItemView {
 			this.renderer3d = r3;
 			this.syncMotion();
 		} catch (error) {
-			console.error('[fast-graph] Could not start the 3D renderer', error);
+			console.error('[speed-graph] Could not start the 3D renderer', error);
 			new Notice('Three-dimensional mode is not available on this device, so the graph stays flat.');
 			this.host.settings.view3d = false;
 			this.host.saveSettings();
@@ -859,21 +859,21 @@ export class GraphView extends ItemView {
 		const path = model.ids.pathOf(id);
 		if (path === undefined) return;
 		this.hoverEl.empty();
-		this.hoverEl.createDiv({ cls: 'fast-graph-hover-title', text: displayName(path) });
-		if (kindOfPath(path) !== NODE_UNRESOLVED) this.hoverEl.createDiv({ cls: 'fast-graph-hover-path', text: path });
-		else this.hoverEl.createDiv({ cls: 'fast-graph-hover-path', text: 'Note does not exist yet' });
+		this.hoverEl.createDiv({ cls: 'speed-graph-hover-title', text: displayName(path) });
+		if (kindOfPath(path) !== NODE_UNRESOLVED) this.hoverEl.createDiv({ cls: 'speed-graph-hover-path', text: path });
+		else this.hoverEl.createDiv({ cls: 'speed-graph-hover-path', text: 'Note does not exist yet' });
 		const links = this.degrees[id] ?? 0;
-		this.hoverEl.createDiv({ cls: 'fast-graph-hover-meta', text: `${links} ${links === 1 ? 'link' : 'links'}` });
+		this.hoverEl.createDiv({ cls: 'speed-graph-hover-meta', text: `${links} ${links === 1 ? 'link' : 'links'}` });
 		const tags = model.tagsOf(id);
-		if (tags.length > 0) this.hoverEl.createDiv({ cls: 'fast-graph-hover-meta', text: tags.join(' ') });
+		if (tags.length > 0) this.hoverEl.createDiv({ cls: 'speed-graph-hover-meta', text: tags.join(' ') });
 		this.positionHoverCard(sx, sy);
 		this.hoverEl.removeClass('is-hidden');
 	}
 
 	private showBubbleCard(count: number, sx: number, sy: number): void {
 		this.hoverEl.empty();
-		this.hoverEl.createDiv({ cls: 'fast-graph-hover-title', text: `${count} notes` });
-		this.hoverEl.createDiv({ cls: 'fast-graph-hover-meta', text: 'Click to zoom in' });
+		this.hoverEl.createDiv({ cls: 'speed-graph-hover-title', text: `${count} notes` });
+		this.hoverEl.createDiv({ cls: 'speed-graph-hover-meta', text: 'Click to zoom in' });
 		this.positionHoverCard(sx, sy);
 		this.hoverEl.removeClass('is-hidden');
 		this.canvas.addClass('is-hovering');

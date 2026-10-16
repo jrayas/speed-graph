@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Fast Graph pack (version 1)",
+  "title": "Speed Graph pack (version 1)",
   "description": "Editor hints only. The plugin's own checker is the authority (docs/pack-format.md).",
   "type": "object",
   "required": [
@@ -10,7 +10,7 @@
   ],
   "properties": {
     "format": {
-      "const": "fast-graph-pack"
+      "const": "speed-graph-pack"
     },
     "version": {
       "const": 1

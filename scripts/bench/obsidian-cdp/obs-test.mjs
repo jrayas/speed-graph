@@ -11,7 +11,7 @@ const ev = async (expr) => { const r = await send('Runtime.evaluate', { expressi
 const mouse = (type, x, y, extra = {}) => send('Input.dispatchMouseEvent', { type, x, y, button: 'left', buttons: type === 'mouseReleased' || type === 'mouseMoved' && !extra.down ? 0 : 1, clickCount: 1, ...extra });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const shot = async (name) => { const r = await send('Page.captureScreenshot', { format: 'png' }); writeFileSync(`${S}/${name}.png`, Buffer.from(r.result.data, 'base64')); };
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
 // Screen position (CSS px) and degree of the biggest hub inside the visible canvas.
 const hubInfo = () => ev(`(() => { const v = ${V}; const r = v.canvas.getBoundingClientRect(); const t = v.transform; let best = -1, bd = -1;
   for (let i = 0; i < v.alive.length; i++) { if (!v.alive[i]) continue; const x = v.positions[2*i]*t.k+t.x, y = v.positions[2*i+1]*t.k+t.y; if (x<20||y<20||x>r.width-20||y>r.height-20) continue; if (v.degrees[i] > bd) { bd = v.degrees[i]; best = i; } }
@@ -48,17 +48,17 @@ const mdBefore = await ev(`app.workspace.getLeavesOfType('markdown').length`);
 await mouse('mouseMoved', h.sx, h.sy); await sleep(200); await mouse('mousePressed', h.sx, h.sy); await mouse('mouseReleased', h.sx, h.sy); await sleep(1200);
 out.click = await ev(`(() => ({ markdownLeavesBefore: ${mdBefore}, after: app.workspace.getLeavesOfType('markdown').length, activeFile: app.workspace.getActiveFile()?.path, expected: ${JSON.stringify(h.path)} }))()`);
 // 6. go back to the graph tab, open the settings panel
-await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('fast-graph-view')[0], { focus: true })`); await sleep(500);
-await ev(`document.querySelector('.fast-graph-controls-toggle').click()`); await sleep(500);
-out.panel = await ev(`(() => ({ open: !document.querySelector('.fast-graph-controls').classList.contains('is-collapsed'), sliders: document.querySelectorAll('.fast-graph-controls input[type=range]').length, toggles: document.querySelectorAll('.fast-graph-controls .checkbox-container').length }))()`);
+await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('speed-graph-view')[0], { focus: true })`); await sleep(500);
+await ev(`document.querySelector('.speed-graph-controls-toggle').click()`); await sleep(500);
+out.panel = await ev(`(() => ({ open: !document.querySelector('.speed-graph-controls').classList.contains('is-collapsed'), sliders: document.querySelectorAll('.speed-graph-controls input[type=range]').length, toggles: document.querySelectorAll('.speed-graph-controls .checkbox-container').length }))()`);
 await shot('t6-panel');
 // 7. change a slider (link distance) and confirm the layout reacts
 const spread = () => ev(`(() => { const v = ${V}; let s = 0, n = 0; for (let i = 0; i < v.alive.length; i++) if (v.alive[i]) { s += Math.hypot(v.positions[2*i], v.positions[2*i+1]); n++; } return s / n; })()`);
 const s0 = await spread();
-await ev(`(() => { const sl = [...document.querySelectorAll('.fast-graph-controls .setting-item')].find(e => e.textContent.includes('Link distance')).querySelector('input[type=range]'); sl.value = 120; sl.dispatchEvent(new Event('input', { bubbles: true })); sl.dispatchEvent(new Event('change', { bubbles: true })); })()`);
+await ev(`(() => { const sl = [...document.querySelectorAll('.speed-graph-controls .setting-item')].find(e => e.textContent.includes('Link distance')).querySelector('input[type=range]'); sl.value = 120; sl.dispatchEvent(new Event('input', { bubbles: true })); sl.dispatchEvent(new Event('change', { bubbles: true })); })()`);
 await sleep(4000);
 const s1 = await spread();
-out.sliderLinkDistance = { meanRadiusBefore: +s0.toFixed(1), after120: +s1.toFixed(1), status: await ev(`document.querySelector('.fast-graph-status').textContent`) };
+out.sliderLinkDistance = { meanRadiusBefore: +s0.toFixed(1), after120: +s1.toFixed(1), status: await ev(`document.querySelector('.speed-graph-status').textContent`) };
 await shot('t7-slider');
 // 8. console errors captured? check performance of the draw in the real app
 out.drawMs = await ev(`${V}.renderer.lastDrawMs`);

@@ -1,6 +1,6 @@
 {
-  "name": "fast-graph",
-  "version": "0.2.0",
+  "name": "speed-graph",
+  "version": "0.3.0",
   "description": "Explore very large vaults in a graph view that stays smooth, with filters, local graph, optional 3D, shape layouts and gentle motion effects.",
   "private": true,
   "license": "0BSD",
@@ -25,10 +25,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jrayas/fast-graph.git"
+    "url": "git+https://github.com/jrayas/speed-graph.git"
   },
-  "homepage": "https://github.com/jrayas/fast-graph#readme",
+  "homepage": "https://github.com/jrayas/speed-graph#readme",
   "bugs": {
-    "url": "https://github.com/jrayas/fast-graph/issues"
+    "url": "https://github.com/jrayas/speed-graph/issues"
   }
 }

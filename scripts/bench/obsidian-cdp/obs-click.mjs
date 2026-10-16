@@ -7,8 +7,8 @@ const send = (method, params = {}) => new Promise((res) => { const i = ++id; pen
 const ev = async (expr) => { const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true }); if (r.result.exceptionDetails) throw new Error(r.result.exceptionDetails.exception?.description); return r.result.result.value; };
 const mouse = (type, x, y, down) => send('Input.dispatchMouseEvent', { type, x, y, button: 'left', buttons: down ? 1 : 0, clickCount: 1 });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
-await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('fast-graph-view')[0], { focus: true })`);
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
+await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('speed-graph-view')[0], { focus: true })`);
 await ev(`${V}.fit(true)`);
 for (let i = 0; i < 40 && !(await ev(`${V}.settled`)); i++) await sleep(500);
 await sleep(500); await ev(`${V}.fit(true)`); await sleep(300);

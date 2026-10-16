@@ -1,9 +1,9 @@
 {
- "format": "fast-graph-pack",
+ "format": "speed-graph-pack",
  "version": 1,
  "id": "arc-reactor",
  "name": "Arc reactor",
- "author": "Fast Graph",
+ "author": "Anthirayas",
  "license": "0BSD",
  "description": "An arc reactor: a double outer ring, ten coil blocks, an inner ring and a glowing core. Your most-connected note is the core and the next ten sit on the coils; every other note lines the rings.",
  "themes": [

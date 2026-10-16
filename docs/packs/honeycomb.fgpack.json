@@ -1,9 +1,9 @@
 {
- "format": "fast-graph-pack",
+ "format": "speed-graph-pack",
  "version": 1,
  "id": "honeycomb",
  "name": "Honeycomb",
- "author": "Fast Graph",
+ "author": "Anthirayas",
  "license": "0BSD",
  "description": "A patch of honeycomb: notes sit on the cell walls.",
  "themes": [

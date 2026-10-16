@@ -5,13 +5,13 @@ const { send, ev, sleep } = main;
 const out = {};
 await ev(`app.plugins.setEnable(true)`); await sleep(2000);
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
-await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
-for (let i = 0; i < 400; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.settled && l.view.sub !== null; })()`)) break; }
+await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('speed-graph:open-graph')`);
+for (let i = 0; i < 400; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('speed-graph-view')[0]; return !!l && l.view.settled && l.view.sub !== null; })()`)) break; }
 await sleep(800);
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
 const evAwait = async (expr) => (await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true })).result?.result?.value;
-await ev(`app.setting.open(); app.setting.openTabById('fast-graph'); 0`); await sleep(2000);
+await ev(`app.setting.open(); app.setting.openTabById('speed-graph'); 0`); await sleep(2000);
 const st = await connect((t) => t.type === 'page' && t.title.startsWith('Settings'));
 const rowFor = (name) => `[...document.querySelectorAll('.vertical-tab-content .setting-item')].find((e) => e.querySelector('.setting-item-name')?.textContent.trim() === ${JSON.stringify(name)})`;
 const choose = (name, label) => st.ev(`(() => { const s = ${rowFor(name)}.querySelector('select'); const o = [...s.options].find((o) => o.text === ${JSON.stringify(label)}); if (!o) return 'no option: ' + [...s.options].map((o) => o.text); s.value = o.value; s.dispatchEvent(new Event('change', { bubbles: true })); return 'ok'; })()`);

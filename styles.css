@@ -1,10 +1,10 @@
-.fast-graph-view {
+.speed-graph-view {
 	position: relative;
 	overflow: hidden;
 	padding: 0;
 }
 
-.fast-graph-canvas {
+.speed-graph-canvas {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -12,15 +12,15 @@
 	cursor: grab;
 }
 
-.fast-graph-canvas.is-hovering {
+.speed-graph-canvas.is-hovering {
 	cursor: pointer;
 }
 
-.fast-graph-canvas.is-panning {
+.speed-graph-canvas.is-panning {
 	cursor: grabbing;
 }
 
-.fast-graph-status {
+.speed-graph-status {
 	position: absolute;
 	left: var(--size-4-2);
 	bottom: var(--size-4-2);
@@ -29,7 +29,7 @@
 	pointer-events: none;
 }
 
-.fast-graph-controls {
+.speed-graph-controls {
 	position: absolute;
 	top: var(--size-4-2);
 	right: var(--size-4-2);
@@ -40,7 +40,7 @@
 	gap: var(--size-4-1);
 }
 
-.fast-graph-controls-body {
+.speed-graph-controls-body {
 	width: 280px;
 	max-width: 80vw;
 	overflow-y: auto;
@@ -50,11 +50,11 @@
 	border-radius: var(--radius-m);
 }
 
-.fast-graph-controls.is-collapsed .fast-graph-controls-body {
+.speed-graph-controls.is-collapsed .speed-graph-controls-body {
 	display: none;
 }
 
-.fast-graph-hover {
+.speed-graph-hover {
 	position: absolute;
 	left: var(--fg-x, 0);
 	top: var(--fg-y, 0);
@@ -67,36 +67,36 @@
 	pointer-events: none;
 }
 
-.fast-graph-hover.is-hidden {
+.speed-graph-hover.is-hidden {
 	display: none;
 }
 
-.fast-graph-hover-title {
+.speed-graph-hover-title {
 	font-weight: var(--font-semibold);
 	overflow-wrap: anywhere;
 }
 
-.fast-graph-hover-path,
-.fast-graph-hover-meta {
+.speed-graph-hover-path,
+.speed-graph-hover-meta {
 	font-size: var(--font-ui-smaller);
 	color: var(--text-muted);
 	overflow-wrap: anywhere;
 }
 
-.fast-graph-groups .setting-item {
+.speed-graph-groups .setting-item {
 	padding: var(--size-4-1) 0;
 }
 
 /* 3D view: a WebGL canvas and a label overlay sit under the (transparent) 2D canvas, which keeps catching the pointer. */
-.fast-graph-gl,
-.fast-graph-overlay {
+.speed-graph-gl,
+.speed-graph-overlay {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
 }
 
-.fast-graph-gl {
+.speed-graph-gl {
 	z-index: 0;
 	background:
 		radial-gradient(circle at 25% 30%, var(--fg3d-bg-a, transparent), transparent 55%),
@@ -105,18 +105,18 @@
 		var(--fg3d-bg-base, transparent);
 }
 
-.fast-graph-overlay {
+.speed-graph-overlay {
 	z-index: 1;
 	pointer-events: none;
 }
 
-.fast-graph-view.is-3d .fast-graph-canvas {
+.speed-graph-view.is-3d .speed-graph-canvas {
 	position: relative;
 	z-index: 2;
 }
 
-.fast-graph-status,
-.fast-graph-hover,
-.fast-graph-controls {
+.speed-graph-status,
+.speed-graph-hover,
+.speed-graph-controls {
 	z-index: 3;
 }

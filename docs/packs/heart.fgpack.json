@@ -1,9 +1,9 @@
 {
-  "format": "fast-graph-pack",
+  "format": "speed-graph-pack",
   "version": 1,
   "id": "heart",
   "name": "Heart",
-  "author": "Fast Graph",
+  "author": "Anthirayas",
   "license": "0BSD",
   "description": "A heart two ways: the classic outline curve filled into a pillow (best in 2D and 3D), and the solid heart formula (3D).",
   "params": [

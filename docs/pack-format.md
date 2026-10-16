@@ -1,4 +1,4 @@
-# Fast Graph pack format (version 1)
+# Speed Graph pack format (version 1)
 
 A pack is one JSON file that can hold **themes** (colours and style), **shapes** (a form the graph is pulled into) and **layouts** (a named bundle of forces that picks a shape and a theme). A pack contains **data only, never code**: it cannot read your notes, touch the network or run anything. Every pack is checked on import and every problem is reported with its path.
 
@@ -7,7 +7,7 @@ Example packs: [docs/packs/](packs/) (a heart, a spiral galaxy, a stylised brain
 ## Top level
 ```json
 {
-  "format": "fast-graph-pack", "version": 1,
+  "format": "speed-graph-pack", "version": 1,
   "id": "my-pack", "name": "My pack", "author": "You", "license": "CC0-1.0",
   "description": "Optional, up to 500 characters.",
   "params": [], "themes": [], "shapes": [], "layouts": []

@@ -1,4 +1,4 @@
-# Fast Graph
+# Speed Graph
 
 A graph view for Obsidian that stays smooth on very large vaults. It works out the layout in the background, so zooming, panning and dragging never freeze, even with tens of thousands of notes.
 
@@ -12,7 +12,7 @@ A graph view for Obsidian that stays smooth on very large vaults. It works out t
 
 Much smoother on big vaults. Here are the numbers for **25,300 notes and 59,867 links**:
 
-| | Built-in graph | Fast Graph, first open | Fast Graph, reopened |
+| | Built-in graph | Speed Graph, first open | Speed Graph, reopened |
 |---|---|---|---|
 | First picture on screen | 0.77 s | 0.35 s | 0.06 s |
 | App busy while opening | 14.4 s | 3.1 s | 0.06 s |
@@ -32,17 +32,19 @@ Much smoother on big vaults. Here are the numbers for **25,300 notes and 59,867 
 - A **local graph**: turn it on, then click a note to see it with its neighbours; click another to move on.
 - Pan by dragging, or with the right or middle mouse button. Settings are behind the gear in the pane header.
 
-**Off until you switch them on** (Settings → Fast Graph)
+**Off until you switch them on** (Settings → Speed Graph)
 - **Shape layouts:** pull your notes into a heart, spiral galaxy, brain, trefoil knot, spider, spider web, **honeycomb**, an **arc reactor**, or a **solar system** (your most-connected notes become the sun and planets). Shapes bring their own colours; turn "Use the shape's own colours" off to keep your normal look.
 - A **3D view**, moving **electrons** along links, a gentle **drift** so the graph feels alive, whole-graph **motion effects** (heartbeat, breathing, shockwave and more), **skins**, and zoomed-out **bubbles**.
 
 **Make your own shapes.** A shape pack is one small file (data only, no code). Import it in the settings, copy any built-in one as a starting point. See [docs/pack-format.md](docs/pack-format.md).
 
 ## Install
-- **Community plugins:** Settings → Community plugins → Browse → search "Fast Graph" (available once accepted into the directory).
-- **By hand:** put `main.js`, `manifest.json` and `styles.css` from the [latest release](../../releases/latest) into `<your vault>/.obsidian/plugins/fast-graph/`, restart Obsidian, enable the plugin. Needs Obsidian 1.13.4 or newer.
+- **Community plugins:** Settings → Community plugins → Browse → search "Speed Graph" (available once accepted into the directory).
+- **By hand:** put `main.js`, `manifest.json` and `styles.css` from the [latest release](../../releases/latest) into `<your vault>/.obsidian/plugins/speed-graph/`, restart Obsidian, enable the plugin. Needs Obsidian 1.13.4 or newer.
 
-Then open it from the ribbon icon, or run **Fast Graph: Open graph view**.
+Then open it from the ribbon icon, or run **Speed Graph: Open graph view**.
+
+**Formerly called Fast Graph** (releases 0.1.0 and 0.2.0). The name changed because another plugin already used that ID. If you installed one of those by hand, delete the old `fast-graph` folder and install Speed Graph fresh; your old settings do not carry over.
 
 ## Good to know
 - **Not tested on phones or tablets.** It is not marked desktop-only, but I have never run it on iOS or Android. If it does not open on your device, please tell me.

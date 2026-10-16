@@ -3,12 +3,12 @@ const main = await connect();
 const { send, ev, sleep } = main;
 await ev(`app.plugins.setEnable(true)`); await sleep(2000);
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
-await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
-for (let i = 0; i < 300; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.settled && l.view.sub !== null; })()`)) break; }
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('speed-graph:open-graph')`);
+for (let i = 0; i < 300; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('speed-graph-view')[0]; return !!l && l.view.settled && l.view.sub !== null; })()`)) break; }
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
 const ev2 = async (e) => { const r = await send('Runtime.evaluate', { expression: e, awaitPromise: true, returnByValue: true }); return r.result?.result?.value ?? r.result?.exceptionDetails?.exception?.description ?? r.result; };
-await ev(`(() => { const p = app.plugins.plugins['fast-graph']; p.graphSettings.activeLayout = 'heart/heart-flat'; p.graphSettings.shapeStrength = 1; 0; })()`);
+await ev(`(() => { const p = app.plugins.plugins['speed-graph']; p.graphSettings.activeLayout = 'heart/heart-flat'; p.graphSettings.shapeStrength = 1; 0; })()`);
 console.log('entry', await ev2(`!!${V}.activeLayout() && ${V}.activeLayout().key`));
 console.log('shape', await ev2(`(() => { const s = ${V}.buildShape(); return s ? { targets: s.targets.length, scale: s.scale, strength: s.strength, nodeRegions: s.nodeRegions.length } : null; })()`));
 console.log('before', await ev2(`(() => { const v = ${V}; return { p0: [v.positions[2*v.sub.ids[0]], v.positions[2*v.sub.ids[0]+1]], settled: v.settled, run: v.driver.running, wanted: v.driver.wanted, gen: v.driver.generation }; })()`));

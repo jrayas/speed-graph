@@ -5,10 +5,10 @@ const { send, ev, sleep } = main;
 const out = {};
 await ev(`app.plugins.setEnable(true)`); await sleep(2000);
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
-await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
-const settled = async () => { for (let i = 0; i < 400; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.dim === 2 && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
+await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('speed-graph:open-graph')`);
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
+const settled = async () => { for (let i = 0; i < 400; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('speed-graph-view')[0]; return !!l && l.view.dim === 2 && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
 out.settled = await settled(); await sleep(1500);
 const mouse = (type, x, y, button = 'none', buttons = 0, clickCount = 0, modifiers = 0) => send('Input.dispatchMouseEvent', { type, x, y, button, buttons, clickCount, modifiers });
 const canvasRect = () => ev(`(() => { const r = ${V}.canvas.getBoundingClientRect(); return { left: r.left, top: r.top, width: r.width, height: r.height }; })()`);
@@ -41,33 +41,33 @@ const tx = rect.left + (await ev(`${V}.renderer.screen[2*${target.id}]`)), ty = 
 await mouse('mouseMoved', tx, ty); await mouse('mousePressed', tx, ty, 'left', 1, 1); await mouse('mouseReleased', tx, ty, 'left', 0, 1); await sleep(1200);
 out.clickOpensNote = { leavesBefore, leavesAfter: await ev(`app.workspace.getLeavesOfType('markdown').length`), active: await ev(`app.workspace.getActiveFile()?.path ?? null`), expected: target.path };
 // back to the graph tab
-await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('fast-graph-view')[0], { focus: true }); 0`); await sleep(800);
+await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('speed-graph-view')[0], { focus: true }); 0`); await sleep(800);
 // ---- setting OFF through the real settings page: left pans again, right does nothing
-await ev(`app.setting.open(); app.setting.openTabById('fast-graph'); 0`); await sleep(2000);
+await ev(`app.setting.open(); app.setting.openTabById('speed-graph'); 0`); await sleep(2000);
 const st = await connect((t) => t.type === 'page' && t.title.startsWith('Settings'));
 const rowFor = (name) => `[...document.querySelectorAll('.vertical-tab-content .setting-item')].find((e) => e.querySelector('.setting-item-name')?.textContent.trim() === ${JSON.stringify(name)})`;
 out.mouseRowFirst = await st.ev(`document.querySelector('.vertical-tab-content .setting-item-name')?.textContent.trim()`);
 await st.ev(`(() => { const c = ${rowFor('Also pan with the right mouse button')}.querySelector('.checkbox-container'); if (c.classList.contains('is-enabled')) c.click(); return 'ok'; })()`); await sleep(800);
 await ev(`app.setting.close(); 0`); await sleep(500);
-await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('fast-graph-view')[0], { focus: true }); 0`); await sleep(500);
-out.savedOff = await ev(`app.plugins.plugins['fast-graph'].graphSettings.rightButtonPan`);
+await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('speed-graph-view')[0], { focus: true }); 0`); await sleep(500);
+out.savedOff = await ev(`app.plugins.plugins['speed-graph'].graphSettings.rightButtonPan`);
 const r2 = await canvasRect();
 const t2 = await tf();
 await drag(r2.left + empty[0], r2.top + empty[1], 70, 40, 'left'); const t3 = await tf();
 out.leftDragOnEmpty_off = { changed: JSON.stringify(t3) !== JSON.stringify(t2) };
 await drag(r2.left + empty[0], r2.top + empty[1], 70, 40, 'right'); out.rightDragOnEmpty_off = { changed: JSON.stringify(await tf()) !== JSON.stringify(t3) };
 // turn it back on for the local graph tests
-await ev(`(() => { const p = app.plugins.plugins['fast-graph']; p.graphSettings.rightButtonPan = true; 0; })()`);
+await ev(`(() => { const p = app.plugins.plugins['speed-graph']; p.graphSettings.rightButtonPan = true; 0; })()`);
 // ---- local graph by clicking
 // independent neighbour count from Obsidian's own link data (markdown notes + unresolved ghosts), no attachments
 const expectedFor = (path) => ev(`(() => { const rl = app.metadataCache.resolvedLinks, ul = app.metadataCache.unresolvedLinks; const set = new Set([${JSON.stringify(path)}]); for (const t of Object.keys(rl[${JSON.stringify(path)}] ?? {})) if (t.endsWith('.md')) set.add(t); for (const t of Object.keys(ul[${JSON.stringify(path)}] ?? {})) set.add('\\u0000' + t); for (const src of Object.keys(rl)) if (rl[src][${JSON.stringify(path)}] && src.endsWith('.md')) set.add(src); return set.size; })()`);
 const shownCount = () => ev(`(() => { const v = ${V}; let n = 0; for (let i = 0; i < v.capacity; i++) if (v.visible[i]) n++; return n; })()`);
-const status = () => ev(`document.querySelector('.fast-graph-status')?.textContent`);
+const status = () => ev(`document.querySelector('.speed-graph-status')?.textContent`);
 out.allShown = await shownCount();
 // turn the local graph on with the real in-graph panel (open it with the header gear)
 await ev(`[...document.querySelectorAll('.view-actions .clickable-icon')].find((e) => e.getAttribute('aria-label') === 'Graph settings').click(); 0`); await sleep(400);
-out.panelLabel = await ev(`[...document.querySelectorAll('.fast-graph-controls .setting-item-name')].map((e) => e.textContent.trim()).filter((t) => /neighbour/i.test(t))`);
-await ev(`(() => { const row = [...document.querySelectorAll('.fast-graph-controls .setting-item')].find((e) => /neighbour/i.test(e.querySelector('.setting-item-name')?.textContent ?? '')); row.querySelector('.checkbox-container').click(); return 'ok'; })()`); await sleep(1800);
+out.panelLabel = await ev(`[...document.querySelectorAll('.speed-graph-controls .setting-item-name')].map((e) => e.textContent.trim()).filter((t) => /neighbour/i.test(t))`);
+await ev(`(() => { const row = [...document.querySelectorAll('.speed-graph-controls .setting-item')].find((e) => /neighbour/i.test(e.querySelector('.setting-item-name')?.textContent ?? '')); row.querySelector('.checkbox-container').click(); return 'ok'; })()`); await sleep(1800);
 await ev(`[...document.querySelectorAll('.view-actions .clickable-icon')].find((e) => e.getAttribute('aria-label') === 'Graph settings').click(); 0`); await sleep(300); // close panel
 await settled(); await sleep(800);
 out.afterToggle = { shown: await shownCount(), status: await status(), activeNote: await ev(`app.workspace.getActiveFile()?.path ?? null`) };
@@ -87,15 +87,15 @@ out.focus2 = { shown: await shownCount(), expected: await expectedFor(neighbour.
 const leavesBeforeDouble = await ev(`app.workspace.getLeavesOfType('markdown').length`);
 await clickNode(neighbour.id, { clickCount: 1 }); await clickNode(neighbour.id, { clickCount: 2 }); await sleep(1500);
 out.doubleClick = { opened: (await ev(`app.workspace.getLeavesOfType('markdown').length`)) > leavesBeforeDouble, active: await ev(`app.workspace.getActiveFile()?.path ?? null`) };
-await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('fast-graph-view')[0], { focus: true }); 0`); await sleep(800);
+await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('speed-graph-view')[0], { focus: true }); 0`); await sleep(800);
 // toggle off: everything is back
 await ev(`[...document.querySelectorAll('.view-actions .clickable-icon')].find((e) => e.getAttribute('aria-label') === 'Graph settings').click(); 0`); await sleep(400);
-await ev(`(() => { const row = [...document.querySelectorAll('.fast-graph-controls .setting-item')].find((e) => /neighbour/i.test(e.querySelector('.setting-item-name')?.textContent ?? '')); row.querySelector('.checkbox-container').click(); return 'ok'; })()`); await sleep(1800); await settled();
+await ev(`(() => { const row = [...document.querySelectorAll('.speed-graph-controls .setting-item')].find((e) => /neighbour/i.test(e.querySelector('.setting-item-name')?.textContent ?? '')); row.querySelector('.checkbox-container').click(); return 'ok'; })()`); await sleep(1800); await settled();
 out.fileOpens = await ev(`JSON.stringify(window.__opens)`);
 out.afterToggleOff = { shown: await shownCount(), same: (await shownCount()) === out.allShown };
 // ---- the scenario from the user: focus on, click, toggle off, toggle ON AGAIN -> must start fresh, not show the old note
-const panelToggle = async () => { await ev(`[...document.querySelectorAll('.view-actions .clickable-icon')].find((e) => e.getAttribute('aria-label') === 'Graph settings').click(); 0`); await sleep(400); await ev(`(() => { const row = [...document.querySelectorAll('.fast-graph-controls .setting-item')].find((e) => /neighbour/i.test(e.querySelector('.setting-item-name')?.textContent ?? '')); row.querySelector('.checkbox-container').click(); return 'ok'; })()`); await sleep(1800); await ev(`[...document.querySelectorAll('.view-actions .clickable-icon')].find((e) => e.getAttribute('aria-label') === 'Graph settings').click(); 0`); await sleep(300); await settled(); await sleep(600); };
-await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('fast-graph-view')[0], { focus: true }); 0`); await sleep(600);
+const panelToggle = async () => { await ev(`[...document.querySelectorAll('.view-actions .clickable-icon')].find((e) => e.getAttribute('aria-label') === 'Graph settings').click(); 0`); await sleep(400); await ev(`(() => { const row = [...document.querySelectorAll('.speed-graph-controls .setting-item')].find((e) => /neighbour/i.test(e.querySelector('.setting-item-name')?.textContent ?? '')); row.querySelector('.checkbox-container').click(); return 'ok'; })()`); await sleep(1800); await ev(`[...document.querySelectorAll('.view-actions .clickable-icon')].find((e) => e.getAttribute('aria-label') === 'Graph settings').click(); 0`); await sleep(300); await settled(); await sleep(600); };
+await ev(`app.workspace.setActiveLeaf(app.workspace.getLeavesOfType('speed-graph-view')[0], { focus: true }); 0`); await sleep(600);
 out.noteOpenInEditor = await ev(`app.workspace.getActiveFile()?.path ?? null`);
 await panelToggle(); // ON (second time)
 out.secondOn = { shown: await shownCount(), status: await status(), centreForgotten: await ev(`${V}.localPath === null`) };
@@ -107,9 +107,9 @@ out.secondOff = await shownCount();
 await panelToggle(); // ON (third time): fresh again
 out.thirdOn = { shown: await shownCount(), status: await status() };
 // a saved "on" never comes back after a restart
-out.savedFlagBeforeReload = await ev(`app.plugins.plugins['fast-graph'].graphSettings.localGraph`);
-await ev(`app.plugins.plugins['fast-graph'].saveData(Object.assign({}, app.plugins.plugins['fast-graph'].graphSettings, { localGraph: true })); 0`); await sleep(600);
-await ev(`app.plugins.disablePlugin('fast-graph').then(() => app.plugins.enablePlugin('fast-graph')); 0`); await sleep(3000);
-out.localGraphAfterReloadWithSavedTrue = await ev(`app.plugins.plugins['fast-graph'].graphSettings.localGraph`);
+out.savedFlagBeforeReload = await ev(`app.plugins.plugins['speed-graph'].graphSettings.localGraph`);
+await ev(`app.plugins.plugins['speed-graph'].saveData(Object.assign({}, app.plugins.plugins['speed-graph'].graphSettings, { localGraph: true })); 0`); await sleep(600);
+await ev(`app.plugins.disablePlugin('speed-graph').then(() => app.plugins.enablePlugin('speed-graph')); 0`); await sleep(3000);
+out.localGraphAfterReloadWithSavedTrue = await ev(`app.plugins.plugins['speed-graph'].graphSettings.localGraph`);
 console.log(JSON.stringify(out, null, 1));
 process.exit(0);

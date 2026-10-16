@@ -86,7 +86,7 @@ export class LayoutDriver {
 				if (this.animate || frame.cooled) this.onFrame(frame.positions, frame.cooled);
 			}
 		} catch (error) {
-			console.error('[fast-graph] Layout loop failed', error);
+			console.error('[speed-graph] Layout loop failed', error);
 		} finally {
 			this.running = false;
 			// A kick may have arrived between the last check and now.

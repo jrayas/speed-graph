@@ -5,22 +5,22 @@ import { connect, decodePng } from './cdp-lib.mjs';
 const [expectedEdges, shotDir] = [Number(process.argv[2]), process.argv[3]];
 const main = await connect();
 const { send, ev, sleep } = main;
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
 const out = {};
-const S = `app.plugins.plugins['fast-graph'].graphSettings`;
+const S = `app.plugins.plugins['speed-graph'].graphSettings`;
 await ev(`app.plugins.setEnable(true)`); await sleep(2000);
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-for (let i = 0; i < 900; i++) { if ((await ev(`app.plugins.plugins['fast-graph'].vaultGraph.model.edges`)) === expectedEdges) break; await sleep(1000); }
-await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
-await ev(`app.commands.executeCommandById('fast-graph:open-graph')`);
-const settled = async (dim) => { for (let i = 0; i < 600; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.dim === ${dim} && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
+for (let i = 0; i < 900; i++) { if ((await ev(`app.plugins.plugins['speed-graph'].vaultGraph.model.edges`)) === expectedEdges) break; await sleep(1000); }
+await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(500);
+await ev(`app.commands.executeCommandById('speed-graph:open-graph')`);
+const settled = async (dim) => { for (let i = 0; i < 600; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('speed-graph-view')[0]; return !!l && l.view.dim === ${dim} && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
 out.settled = await settled(2); await sleep(1500);
 // mean colour of the graph pane from a small screenshot
 const pane = await ev(`(() => { const r = ${V}.canvas.getBoundingClientRect(); return { x: r.left, y: r.top + 20, width: r.width, height: r.height - 60 }; })()`);
 const measure = async () => { await sleep(700); const r = await send('Page.captureScreenshot', { format: 'png', clip: { ...pane, scale: 0.3 } }); const img = decodePng(Buffer.from(r.result.data, 'base64')); let R = 0, G = 0, B = 0, n = 0; for (let i = 0; i < img.width * img.height; i++) { R += img.data[i * img.channels]; G += img.data[i * img.channels + 1]; B += img.data[i * img.channels + 2]; n++; } return { r: +(R / n).toFixed(2), g: +(G / n).toFixed(2), b: +(B / n).toFixed(2), luma: +((0.299 * R + 0.587 * G + 0.114 * B) / n).toFixed(2) }; };
 const shot = async (name) => { const r = await send('Page.captureScreenshot', { format: 'png' }); writeFileSync(`${shotDir}/${name}.png`, Buffer.from(r.result.data, 'base64')); };
 // open the real settings window
-await ev(`app.setting.open(); app.setting.openTabById('fast-graph'); 0`); await sleep(2000);
+await ev(`app.setting.open(); app.setting.openTabById('speed-graph'); 0`); await sleep(2000);
 const st = await connect((t) => t.type === 'page' && t.title.startsWith('Settings'));
 const sev = st.ev;
 const names = () => sev(`[...document.querySelectorAll('.vertical-tab-content .setting-item-name')].map((e) => e.textContent.trim())`);
@@ -63,7 +63,7 @@ await sleep(1500); out.settledAfterForce = await settled(2); await sleep(500);
 out.linkDistance = { before, after160: await spread(), saved: await ev(`${S}.linkDistance`) };
 await setSlider('Link distance', 30); await sleep(1500); await settled(2);
 // 6. skin rows appear, glow strength changes the picture
-await ev(`(() => { ${S}.skin = 'galaxy'; app.plugins.plugins['fast-graph'].settingsListeners.forEach((cb) => cb()); })()`); await sleep(1500);
+await ev(`(() => { ${S}.skin = 'galaxy'; app.plugins.plugins['speed-graph'].settingsListeners.forEach((cb) => cb()); })()`); await sleep(1500);
 out.rowsGalaxy = (await names()).filter((n) => ['Glow strength', 'Background brightness', 'Effects speed', 'Animate skin effects'].includes(n));
 out.glow = {};
 for (const v of [0, 1, 2]) { await setSlider('Glow strength', v); await sleep(300); out.glow[v] = await measure(); }
@@ -79,7 +79,7 @@ await setSlider('Brightness', 1.9); await setSlider('Saturation', 0.3);
 await sev(`(() => { const row = [...document.querySelectorAll('.vertical-tab-content .setting-item')].find((e) => e.querySelector('.setting-item-name')?.textContent.trim() === 'Reset brightness and colour'); row.click(); })()`); await sleep(600);
 out.afterReset = await look();
 // 9. 3D settings rows and effect
-await ev(`(() => { ${S}.skin = 'default'; ${S}.view3d = true; app.plugins.plugins['fast-graph'].settingsListeners.forEach((cb) => cb()); })()`);
+await ev(`(() => { ${S}.skin = 'default'; ${S}.view3d = true; app.plugins.plugins['speed-graph'].settingsListeners.forEach((cb) => cb()); })()`);
 out.settled3d = await settled(3); await sleep(1500);
 out.rows3d = (await names()).filter((n) => ['Field of view', 'Depth fade', 'Slowly rotate the 3D view'].includes(n));
 await setSlider('Field of view', 80); await sleep(400);

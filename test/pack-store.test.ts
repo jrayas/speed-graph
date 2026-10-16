@@ -17,7 +17,7 @@ function memory(initial: Record<string, string> = {}): PackIO & { files: Record<
 		remove: async (n) => void delete files[n],
 	};
 }
-const pack = (id: string, extra: Record<string, unknown> = {}) => JSON.stringify({ format: 'fast-graph-pack', version: 1, id, name: id.toUpperCase(), layouts: [{ id: 'l', name: 'Mine' }], ...extra });
+const pack = (id: string, extra: Record<string, unknown> = {}) => JSON.stringify({ format: 'speed-graph-pack', version: 1, id, name: id.toUpperCase(), layouts: [{ id: 'l', name: 'Mine' }], ...extra });
 
 test('built-in packs: the examples load and give layouts with stable keys', async () => {
 	const store = new PackStore(memory(), builtinPacks());

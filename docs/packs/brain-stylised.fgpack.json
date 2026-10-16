@@ -1,9 +1,9 @@
 {
-  "format": "fast-graph-pack",
+  "format": "speed-graph-pack",
   "version": 1,
   "id": "brain-stylised",
   "name": "Brain (stylised)",
-  "author": "Fast Graph",
+  "author": "Anthirayas",
   "license": "0BSD",
   "description": "A stylised brain, not anatomically exact: two hemispheres with frontal, parietal, temporal and occipital lobes, a cerebellum and a brainstem. Edit each region's match to choose which notes live there, for example \"tag:#work\".",
   "themes": [

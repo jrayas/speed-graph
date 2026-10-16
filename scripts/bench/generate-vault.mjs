@@ -96,10 +96,10 @@ for (let i = 0; i < notes; i++) {
 	writeFileSync(join(out, folder, `${nameOf(i)}.md`), lines.join('\n'));
 }
 mkdirSync(join(out, '.obsidian', 'plugins'), { recursive: true });
-writeFileSync(join(out, '.obsidian', 'community-plugins.json'), '["fast-graph"]\n');
+writeFileSync(join(out, '.obsidian', 'community-plugins.json'), '["speed-graph"]\n');
 const pluginDir = resolve(import.meta.dirname, '..', 'plugin');
-if (!existsSync(join(out, '.obsidian', 'plugins', 'fast-graph'))) {
-	symlinkSync(pluginDir, join(out, '.obsidian', 'plugins', 'fast-graph'));
+if (!existsSync(join(out, '.obsidian', 'plugins', 'speed-graph'))) {
+	symlinkSync(pluginDir, join(out, '.obsidian', 'plugins', 'speed-graph'));
 }
 const orphans = orphan.reduce((a, b) => a + b, 0);
 const attachments = embeds;

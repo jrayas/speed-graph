@@ -6,7 +6,7 @@ import { PACK_LIMITS, parsePackText, themeToSkin, validatePack } from '../src/pa
 import { SKINS } from '../src/render/skins';
 
 const minimal = (extra: Record<string, unknown> = {}): Record<string, unknown> => ({
-	format: 'fast-graph-pack',
+	format: 'speed-graph-pack',
 	version: 1,
 	id: 'p',
 	layouts: [{ id: 'l' }],
@@ -67,11 +67,11 @@ test('a minimal pack is accepted and every default is filled in', () => {
 test('file level problems', () => {
 	assert.ok(has(errs(null), '(file)', /object/));
 	assert.ok(has(errs([]), '(file)', /object/));
-	assert.ok(has(errs(minimal({ format: 'other' })), 'format', /fast-graph-pack/));
+	assert.ok(has(errs(minimal({ format: 'other' })), 'format', /speed-graph-pack/));
 	assert.ok(has(errs(minimal({ version: 2 })), 'version', /version 1/));
 	assert.ok(has(errs(minimal({ id: undefined })), 'id', /Required/));
 	assert.ok(has(errs(minimal({ id: 'Bad Id!' })), 'id', /lower-case/));
-	assert.ok(has(errs({ format: 'fast-graph-pack', version: 1, id: 'x' }), '(file)', /no themes, shapes or layouts/));
+	assert.ok(has(errs({ format: 'speed-graph-pack', version: 1, id: 'x' }), '(file)', /no themes, shapes or layouts/));
 	assert.ok(has(errs(minimal({ name: 'x'.repeat(81) })), 'name', /Longer than 80/));
 });
 
@@ -202,7 +202,7 @@ test('parsePackText: size, JSON and a round trip', () => {
 	const r3 = parsePackText(JSON.stringify(minimal()));
 	assert.ok(r3.ok);
 	// prototype pollution attempts are plain data and change nothing
-	const r4 = parsePackText('{"format":"fast-graph-pack","version":1,"id":"x","layouts":[{"id":"l"}],"__proto__":{"polluted":true},"constructor":{"prototype":{"polluted":true}}}');
+	const r4 = parsePackText('{"format":"speed-graph-pack","version":1,"id":"x","layouts":[{"id":"l"}],"__proto__":{"polluted":true},"constructor":{"prototype":{"polluted":true}}}');
 	assert.ok(r4.ok);
 	assert.equal(({} as Record<string, unknown>).polluted, undefined);
 });
@@ -273,4 +273,13 @@ test('exclusive point regions and layout guides: defaults, validation and round 
 	const again = parsePackText(JSON.stringify(r.pack));
 	assert.ok(again.ok);
 	if (again.ok) assert.deepEqual(again.pack, r.pack);
+});
+
+test('a pack made for the plugin\'s old name (format "fast-graph-pack") is still read, and comes out with the new label', () => {
+	const old = { format: 'fast-graph-pack', version: 1, id: 'old', layouts: [{ id: 'l' }] };
+	const r = ok(old);
+	assert.equal(r.pack.format, 'speed-graph-pack');
+	const again = parsePackText(JSON.stringify(r.pack));
+	assert.ok(again.ok);
+	assert.ok(has(errs({ ...old, format: 'something-else' }), 'format', /speed-graph-pack/));
 });

@@ -1,7 +1,7 @@
 import { connect } from './cdp-lib.mjs';
 const { send, ev, sleep, close } = await connect();
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
-const state = () => ev(`(() => { const v = ${V}; return { drag: v.drag && v.drag.kind, pointers: v.pointers.size, hovered: v.hovered, cardHidden: document.querySelector('.fast-graph-hover').classList.contains('is-hidden') }; })()`);
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
+const state = () => ev(`(() => { const v = ${V}; return { drag: v.drag && v.drag.kind, pointers: v.pointers.size, hovered: v.hovered, cardHidden: document.querySelector('.speed-graph-hover').classList.contains('is-hidden') }; })()`);
 const rect = await ev(`(() => { const r = ${V}.canvas.getBoundingClientRect(); return { l: r.left, t: r.top, w: r.width, h: r.height }; })()`);
 // right drag slide, then re-fit and hover the busiest node (same order as the failing run)
 await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: rect.l + 40, y: rect.t + rect.h - 40, button: 'right', buttons: 2, clickCount: 1 });

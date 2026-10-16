@@ -2,11 +2,13 @@ import type { Skin } from '../render/skins';
 import { compileExpression } from './expression';
 
 /**
- * The Fast Graph pack format: a plain JSON file that can hold themes, shapes and layouts, and no code.
+ * The Speed Graph pack format: a plain JSON file that can hold themes, shapes and layouts, and no code.
  * validatePack checks everything, reports every problem with its path, and returns a fully filled-in pack.
  * See docs/pack-format.md.
  */
-export const PACK_FORMAT = 'fast-graph-pack';
+export const PACK_FORMAT = 'speed-graph-pack';
+/** The label packs carried when the plugin was called Fast Graph (0.1.0 and 0.2.0). Still read, and saved with the new label. */
+export const LEGACY_PACK_FORMAT = 'fast-graph-pack';
 export const PACK_VERSION = 1;
 
 export const PACK_LIMITS = {
@@ -555,7 +557,7 @@ export function validatePack(raw: unknown): PackResult {
 	const r = rec(c, raw, '');
 	if (!r) return { ok: false, errors: c.errors.map((e) => ({ ...e, path: '(file)' })) };
 	allow(c, r, '', ['format', 'version', 'id', 'name', 'author', 'license', 'description', 'params', 'themes', 'shapes', 'layouts']);
-	if (r.format !== PACK_FORMAT) c.error('format', `Expected "${PACK_FORMAT}"`);
+	if (r.format !== PACK_FORMAT && r.format !== LEGACY_PACK_FORMAT) c.error('format', `Expected "${PACK_FORMAT}"`);
 	if (r.version !== PACK_VERSION) c.error('version', r.version === undefined ? `Required: ${PACK_VERSION}` : `This plugin reads version ${PACK_VERSION}, the file says ${JSON.stringify(r.version)}`);
 	const packIds = new Set<string>();
 	const pack: Pack = {

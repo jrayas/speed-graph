@@ -18,8 +18,8 @@ export function buildControls(
 	onChange: (kind: ChangeKind) => void,
 ): HTMLElement {
 	// Opened and closed by the gear in the pane header (graph-view.ts), so there is no button in the canvas.
-	const panel = parent.createDiv({ cls: 'fast-graph-controls is-collapsed' });
-	const body = panel.createDiv({ cls: 'fast-graph-controls-body' });
+	const panel = parent.createDiv({ cls: 'speed-graph-controls is-collapsed' });
+	const body = panel.createDiv({ cls: 'speed-graph-controls-body' });
 
 	const slider = (name: string, key: NumericKey, kind: ChangeKind) => {
 		const [min, max, step] = RANGES[key];
@@ -59,7 +59,7 @@ export function buildControls(
 	toggleSetting('Existing files only', 'hideUnresolved', 'filter');
 
 	new Setting(body).setName('Groups').setHeading();
-	const groupList = body.createDiv({ cls: 'fast-graph-groups' });
+	const groupList = body.createDiv({ cls: 'speed-graph-groups' });
 	const renderGroups = () => {
 		groupList.empty();
 		settings.groups.forEach((group, index) => {

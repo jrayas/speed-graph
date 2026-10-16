@@ -81,14 +81,14 @@ if (which !== 'ours') {
 if (which !== 'builtin') {
   await ev(`app.plugins.setEnable(true)`); await sleep(2000);
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-  for (let i = 0; i < 900; i++) { if ((await ev(`app.plugins.plugins['fast-graph'].vaultGraph.model.edges`)) === expectedEdges) break; await sleep(1000); }
-  await ev(`app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`); await sleep(500);
-  await ev(`app.commands.executeCommandById('fast-graph:clear-layout-cache')`); await sleep(1000); // cold start: no saved layout
-  out.ours = await measure('ours-cold', `app.commands.executeCommandById('fast-graph:open-graph')`, `app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`, pane,
-    `(() => { const v = app.workspace.getLeavesOfType('fast-graph-view')[0]?.view; return v ? { settled: v.settled, cache: v.cacheInfo, bubbles: v.renderer.bubbleCount } : null; })()`);
+  for (let i = 0; i < 900; i++) { if ((await ev(`app.plugins.plugins['speed-graph'].vaultGraph.model.edges`)) === expectedEdges) break; await sleep(1000); }
+  await ev(`app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`); await sleep(500);
+  await ev(`app.commands.executeCommandById('speed-graph:clear-layout-cache')`); await sleep(1000); // cold start: no saved layout
+  out.ours = await measure('ours-cold', `app.commands.executeCommandById('speed-graph:open-graph')`, `app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`, pane,
+    `(() => { const v = app.workspace.getLeavesOfType('speed-graph-view')[0]?.view; return v ? { settled: v.settled, cache: v.cacheInfo, bubbles: v.renderer.bubbleCount } : null; })()`);
   await sleep(3000);
-  out.oursWithCache = await measure('ours-cached', `app.commands.executeCommandById('fast-graph:open-graph')`, `app.workspace.getLeavesOfType('fast-graph-view').forEach((l) => l.detach())`, pane,
-    `(() => { const v = app.workspace.getLeavesOfType('fast-graph-view')[0]?.view; return v ? { settled: v.settled, cache: v.cacheInfo, bubbles: v.renderer.bubbleCount } : null; })()`);
+  out.oursWithCache = await measure('ours-cached', `app.commands.executeCommandById('speed-graph:open-graph')`, `app.workspace.getLeavesOfType('speed-graph-view').forEach((l) => l.detach())`, pane,
+    `(() => { const v = app.workspace.getLeavesOfType('speed-graph-view')[0]?.view; return v ? { settled: v.settled, cache: v.cacheInfo, bubbles: v.renderer.bubbleCount } : null; })()`);
 }
 console.log(JSON.stringify(out, null, 1));
 close();

@@ -1,9 +1,9 @@
 {
- "format": "fast-graph-pack",
+ "format": "speed-graph-pack",
  "version": 1,
  "id": "spider",
  "name": "Spider",
- "author": "Fast Graph",
+ "author": "Anthirayas",
  "license": "0BSD",
  "description": "A spider (head, body and eight legs) and a spider web, as flat shapes. Notes line up along the legs and the silk.",
  "themes": [

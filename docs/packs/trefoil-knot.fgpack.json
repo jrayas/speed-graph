@@ -1,9 +1,9 @@
 {
-  "format": "fast-graph-pack",
+  "format": "speed-graph-pack",
   "version": 1,
   "id": "trefoil-knot",
   "name": "Trefoil knot",
-  "author": "Fast Graph",
+  "author": "Anthirayas",
   "license": "0BSD",
   "description": "A parametric curve in 3D: notes gather along a trefoil knot. A good first example of writing your own formulas.",
   "shapes": [

@@ -5,7 +5,7 @@ Works on Obsidian 1.14.4 (Electron 43, Chromium 150), macOS. Verified 2026-10-15
 ## How
 1. `bench/obsidian-cdp/launch.sh test-vault/gen-1k <work dir>` starts a second Obsidian with its own data folder and Chromium's `--remote-debugging-port=9222`, on a **copy** of the vault. The user's own Obsidian and the repo vaults are not touched.
 2. Connect with Node 22 (built-in `WebSocket`) to the page whose URL starts with `app://`. `cdp.mjs` has `eval`, `key` and `shot`. Inside the page, `app` is Obsidian's global, so we can enable plugins (`app.plugins.setEnable(true)`), run commands (`app.commands.executeCommandById`), read plugin and view state, and send real mouse events (`Input.dispatchMouseEvent`).
-3. After rebuilding: `app.plugins.disablePlugin('fast-graph'); app.plugins.enablePlugin('fast-graph')`, then run the open-graph command.
+3. After rebuilding: `app.plugins.disablePlugin('speed-graph'); app.plugins.enablePlugin('speed-graph')`, then run the open-graph command.
 4. Stop it when finished: `pkill -f "user-data-dir=<work dir>/obs-data"`. The debug port gives full control of that instance to any local process, so it only runs during testing.
 
 ## Rules (learned the hard way)

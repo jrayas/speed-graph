@@ -2,7 +2,7 @@
 name = "fastgraph_core"
 version = "0.1.0"
 edition = "2021"
-description = "Layout engine for the Fast Graph Obsidian plugin (compiled to WebAssembly)"
+description = "Layout engine for the Speed Graph Obsidian plugin (compiled to WebAssembly)"
 license = "0BSD"
 
 [lib]

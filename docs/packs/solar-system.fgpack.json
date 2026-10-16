@@ -1,9 +1,9 @@
 {
- "format": "fast-graph-pack",
+ "format": "speed-graph-pack",
  "version": 1,
  "id": "solar-system",
  "name": "Solar system",
- "author": "Fast Graph",
+ "author": "Anthirayas",
  "license": "0BSD",
  "description": "Your most-connected notes become the sun and eight planets, each on its own orbit with clear space around it; every other note is a star.",
  "themes": [

@@ -1,4 +1,4 @@
-//! Fast Graph core. Phase 1: a trivial function to prove the pipeline.
+//! Speed Graph core. Phase 1: a trivial function to prove the pipeline.
 //! Only typed arrays of numbers cross the JS/Rust boundary.
 
 use wasm_bindgen::prelude::*;

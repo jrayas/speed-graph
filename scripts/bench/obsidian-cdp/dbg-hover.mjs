@@ -1,8 +1,8 @@
 import { connect } from './cdp-lib.mjs';
 const { send, ev, sleep, close } = await connect();
-const V = `app.workspace.getLeavesOfType('fast-graph-view')[0].view`;
-const waitSettled = async (dim) => { for (let i = 0; i < 400; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('fast-graph-view')[0]; return !!l && l.view.dim === ${dim} && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
-await ev(`(() => { const p = app.plugins.plugins['fast-graph']; p.graphSettings.view3d = true; p.settingsListeners.forEach((cb) => cb()); })()`);
+const V = `app.workspace.getLeavesOfType('speed-graph-view')[0].view`;
+const waitSettled = async (dim) => { for (let i = 0; i < 400; i++) { await sleep(250); if (await ev(`(() => { const l = app.workspace.getLeavesOfType('speed-graph-view')[0]; return !!l && l.view.dim === ${dim} && l.view.settled && l.view.sub !== null; })()`)) return true; } return false; };
+await ev(`(() => { const p = app.plugins.plugins['speed-graph']; p.graphSettings.view3d = true; p.settingsListeners.forEach((cb) => cb()); })()`);
 console.log('settled 3d', await waitSettled(3)); await sleep(1000);
 const rect = await ev(`(() => { const r = ${V}.canvas.getBoundingClientRect(); return { l: r.left, t: r.top, w: r.width, h: r.height }; })()`);
 const state = () => ev(`(() => { const v = ${V}; return { drag: v.drag && v.drag.kind, pointers: v.pointers.size, hovered: v.hovered }; })()`);
