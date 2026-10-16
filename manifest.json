@@ -1,7 +1,7 @@
 {
   "id": "speed-graph",
   "name": "Speed Graph",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "minAppVersion": "1.13.4",
   "description": "Explore very large vaults in a graph view that stays smooth, with filters, local graph, optional 3D, shape layouts and gentle motion effects.",
   "author": "Anthirayas",

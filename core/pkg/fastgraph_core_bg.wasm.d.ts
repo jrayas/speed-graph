@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 export const memory: WebAssembly.Memory;
 export const __wbg_layout3_free: (a: number, b: number) => void;
 export const __wbg_layout_free: (a: number, b: number) => void;

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 
 export class Layout {
     free(): void;

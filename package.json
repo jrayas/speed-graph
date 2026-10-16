@@ -1,12 +1,12 @@
 {
   "name": "speed-graph",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Explore very large vaults in a graph view that stays smooth, with filters, local graph, optional 3D, shape layouts and gentle motion effects.",
   "private": true,
   "license": "0BSD",
   "type": "module",
   "scripts": {
-    "build:wasm": "cd core && wasm-pack build --release --target web --out-dir pkg && rm -f pkg/.gitignore && cp pkg/fastgraph_core_bg.wasm ../src/generated/core.wasm",
+    "build:wasm": "cd core && wasm-pack build --release --target web --out-dir pkg && rm -f pkg/.gitignore && perl -i -ne 'print unless /eslint-disable|tslint:disable/' pkg/*.d.ts && cp pkg/fastgraph_core_bg.wasm ../src/generated/core.wasm",
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
     "lint": "eslint .",
