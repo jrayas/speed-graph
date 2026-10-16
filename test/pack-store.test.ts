@@ -19,13 +19,15 @@ function memory(initial: Record<string, string> = {}): PackIO & { files: Record<
 }
 const pack = (id: string, extra: Record<string, unknown> = {}) => JSON.stringify({ format: 'fast-graph-pack', version: 1, id, name: id.toUpperCase(), layouts: [{ id: 'l', name: 'Mine' }], ...extra });
 
-test('built-in packs: the four examples load and give layouts with stable keys', async () => {
+test('built-in packs: the examples load and give layouts with stable keys', async () => {
 	const store = new PackStore(memory(), builtinPacks());
 	await store.load();
-	assert.deepEqual(store.all().map((p) => p.pack.id).sort(), ['brain-stylised', 'galaxy', 'heart', 'trefoil-knot']);
+	assert.deepEqual(store.all().map((p) => p.pack.id).sort(), ['brain-stylised', 'galaxy', 'heart', 'honeycomb', 'solar-system', 'spider', 'trefoil-knot']);
 	assert.ok(store.all().every((p) => p.builtin));
 	const keys = store.layouts().map((l) => l.key);
 	assert.ok(keys.includes('heart/heart-3d') && keys.includes('galaxy/galaxy-3d') && keys.includes('brain-stylised/brain-3d'));
+	for (const k of ['galaxy/galaxy-2d', 'spider/spider-2d', 'spider/web-2d', 'honeycomb/honeycomb-2d', 'solar-system/solar-2d']) assert.ok(keys.includes(k), k);
+	assert.ok(['galaxy/galaxy-2d', 'spider/spider-2d', 'spider/web-2d', 'honeycomb/honeycomb-2d', 'solar-system/solar-2d'].every((k) => store.find(k)?.layout.dimensions === 2));
 	assert.equal(store.find('heart/heart-flat')?.layout.dimensions, 2);
 	assert.equal(store.find('nope/none'), undefined);
 });

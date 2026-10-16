@@ -93,6 +93,8 @@ export class CanvasRenderer {
 	private drawn: Uint8Array = new Uint8Array(0);
 	private pickable: Uint8Array = new Uint8Array(0);
 	private highlight = -1;
+	/** The active shape as x, y world positions, drawn as faint dots; null for none. */
+	private guide: Float32Array | null = null;
 	private driftSeeds: Float32Array = new Float32Array(0);
 	private readonly driftTmp = [0, 0, 0];
 	/** How still each recently hovered note is held (0 = drifting freely, 1 = still); eased so it never pops. */
@@ -496,6 +498,29 @@ export class CanvasRenderer {
 		}
 	}
 
+	/** Draws the shape as a faint dotted guide behind the graph (x, y world positions), or nothing for null. */
+	setGuide(points: Float32Array | null): void {
+		this.guide = points && points.length >= 2 ? points : null;
+		this.requestDraw();
+	}
+
+	private drawGuide(): void {
+		const g = this.guide;
+		if (!g) return;
+		const { ctx } = this;
+		const { x: tx, y: ty, k } = this.transform;
+		ctx.fillStyle = this.palette.accent;
+		ctx.globalAlpha = 0.65;
+		const size = Math.min(3.2, Math.max(1.8, k * 4));
+		for (let i = 0; i + 1 < g.length; i += 2) {
+			const sx = (g[i] as number) * k + tx;
+			const sy = (g[i + 1] as number) * k + ty;
+			if (sx < -4 || sy < -4 || sx > this.width + 4 || sy > this.height + 4) continue;
+			ctx.fillRect(sx - size / 2, sy - size / 2, size, size);
+		}
+		ctx.globalAlpha = 1;
+	}
+
 	/** A whole-graph effect for this frame (a scale about the origin and a shake in pixels), see motion.ts. */
 	setMotion(frame: MotionFrame): void {
 		this.motion = frame;
@@ -529,6 +554,7 @@ export class CanvasRenderer {
 		if (count === 0) return;
 		this.project(count);
 		this.buildClusters(count);
+		this.drawGuide();
 		this.drawLinks(data);
 		this.drawPulses(data);
 		this.drawNodes(data, count);

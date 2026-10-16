@@ -2,7 +2,7 @@
 
 A pack is one JSON file that can hold **themes** (colours and style), **shapes** (a form the graph is pulled into) and **layouts** (a named bundle of forces that picks a shape and a theme). A pack contains **data only, never code**: it cannot read your notes, touch the network or run anything. Every pack is checked on import and every problem is reported with its path.
 
-Example packs: [docs/packs/](packs/). Editor hints: [packs/fgpack.schema.json](packs/fgpack.schema.json) (the plugin's own checker is the authority). Pack files are plain text under the same licence as this repository (0BSD) unless the pack says otherwise.
+Example packs: [docs/packs/](packs/) (a heart, a spiral galaxy, a stylised brain, a trefoil knot, a spider and a spider web, a honeycomb, and a solar system whose planets are your most-connected notes). `bench/generate-shape-packs.mjs` draws the last four as data, so you can see how. Editor hints: [packs/fgpack.schema.json](packs/fgpack.schema.json) (the plugin's own checker is the authority). Pack files are plain text under the same licence as this repository (0BSD) unless the pack says otherwise.
 
 ## Top level
 ```json
@@ -71,7 +71,15 @@ A curve uses `t`; a surface uses `u` and `v`. `x`, `y`, `z` are formulas (`z` de
 `value` is a formula of `x`, `y`, `z` that is **negative inside the shape and positive outside**. `bounds` (0.5 to 4) is the half-size of the box that is searched; `resolution` (16 to 64) is the grid size. Very thin features need a high resolution or a `parametric` shape instead.
 
 ### `points`: any shape
-`"points": [[x, y, z], ...]` (2 or 3 numbers each, up to 5000).
+`"points": [[x, y, z], ...]` (2 or 3 numbers each, up to 5000 in all). Draw anything: a spider, a honeycomb, a web. Add `regions` to send groups of notes to groups of points:
+```json
+{ "id": "solar", "kind": "points", "points": [],
+  "regions": [
+    { "name": "Sun",     "match": "top:1",       "points": [[0, 0]] },
+    { "name": "Planets", "match": "top:9",       "points": [[0.2, 0], [0.32, 0.1]] },
+    { "name": "Stars",   "match": "degree>=0",   "points": [[0.5, 0.5], [0.6, -0.2]] } ] }
+```
+A note goes to the **first** region whose `match` fits it, then settles on that region's points only; a note that fits none may go anywhere in the shape. Because the first fit wins, list narrow regions first and a catch-all such as `degree>=0` last. All regions together may hold 5000 points. `match` uses the search language: words, `path:`, `file:`, `tag:#x`, `-` for not, `OR`, and two terms for shapes: `degree>=5` (also `>`, `<=`, `<`, `=`) is the number of links, and `top:9` means one of the 9 most connected of the notes being placed (rank 1 is the most connected; equal counts keep their order).
 
 ## Layouts
 ```json

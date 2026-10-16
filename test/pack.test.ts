@@ -241,3 +241,36 @@ test('a checked pack reads back identically (so saved packs reload): every examp
 		}
 	}
 });
+
+test('shape kind points with regions: groups of target points chosen by a query', () => {
+	const solar = ok(minimal({ shapes: [shape({ kind: 'points', regions: [{ name: 'Sun', match: 'top:1', points: [[0, 0, 0]] }, { name: 'Stars', match: 'degree>=0', points: [[0.5, 0.5], [0.6, 0.1, 0.2]] }] })] })).pack.shapes[0]!;
+	assert.equal(solar.kind === 'points' ? solar.regions.length : -1, 2);
+	assert.deepEqual(solar.kind === 'points' ? solar.regions[1]!.points : null, [[0.5, 0.5, 0], [0.6, 0.1, 0.2]]);
+	assert.equal(solar.kind === 'points' ? solar.points.length : -1, 0); // only regions is fine
+	assert.ok(has(errs(minimal({ shapes: [shape({ kind: 'points' })] })), 'shapes[0].points', /at least one point/));
+	assert.ok(has(errs(minimal({ shapes: [shape({ kind: 'points', regions: [{ name: 'r', points: [] }] })] })), 'shapes[0].regions[0].points', /at least one point/));
+	assert.ok(has(errs(minimal({ shapes: [shape({ kind: 'points', regions: [{ match: 'x', points: [[0, 0, 0]] }] })] })), 'shapes[0].regions[0].name', /Required/));
+	assert.ok(has(errs(minimal({ shapes: [shape({ kind: 'points', regions: [{ name: 'r', points: [[0, 0, 9]] }] })] })), 'shapes[0].regions[0].points[0][2]', /between -4 and 4/));
+	const half = Array.from({ length: 3000 }, () => [0, 0, 0]);
+	assert.ok(errs(minimal({ shapes: [shape({ kind: 'points', points: half, regions: [{ name: 'r', points: half }] })] })).some((e) => /At most 5000 points in a shape/.test(e.message)));
+	// a saved (filled-in) pack with regions reads back the same
+	const first = parsePackText(JSON.stringify(minimal({ shapes: [shape({ kind: 'points', points: [[0, 0, 0]], regions: [{ name: 'r', match: 'top:2', points: [[1, 1, 0]] }] })] })));
+	assert.ok(first.ok);
+	if (first.ok) {
+		const again = parsePackText(JSON.stringify(first.pack));
+		assert.ok(again.ok);
+		if (again.ok) assert.deepEqual(again.pack, first.pack);
+	}
+});
+
+test('exclusive point regions and layout guides: defaults, validation and round trip', () => {
+	const r = ok(minimal({ shapes: [shape({ kind: 'points', regions: [{ name: 'a', points: [[0, 0]] }, { name: 'b', exclusive: true, points: [[1, 1]] }] })], layouts: [{ id: 'l', shape: 's' }, { id: 'g', shape: 's', guide: true }] }));
+	const s = r.pack.shapes[0]!;
+	assert.deepEqual(s.kind === 'points' ? s.regions.map((x) => x.exclusive) : null, [false, true]);
+	assert.deepEqual(r.pack.layouts.map((l) => l.guide), [false, true]);
+	assert.ok(has(errs(minimal({ shapes: [shape({ kind: 'points', regions: [{ name: 'a', exclusive: 'yes', points: [[0, 0]] }] })] })), 'shapes[0].regions[0].exclusive', /true or false/));
+	assert.ok(has(errs(minimal({ layouts: [{ id: 'l', guide: 1 }] })), 'layouts[0].guide', /true or false/));
+	const again = parsePackText(JSON.stringify(r.pack));
+	assert.ok(again.ok);
+	if (again.ok) assert.deepEqual(again.pack, r.pack);
+});

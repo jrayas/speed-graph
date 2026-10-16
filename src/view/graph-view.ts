@@ -361,7 +361,7 @@ export class GraphView extends ItemView {
 		const path = model.ids.pathOf(id);
 		if (path === undefined) return undefined;
 		const name = displayName(path);
-		return { path: kindOfPath(path) === NODE_UNRESOLVED ? name : path, name, tags: model.tagsOf(id) };
+		return { path: kindOfPath(path) === NODE_UNRESOLVED ? name : path, name, tags: model.tagsOf(id), degree: this.degrees[id] ?? 0 };
 	};
 
 	/** Works out what is visible and which colour group each node is in; restarts the layout if the visible set changed. */
@@ -464,11 +464,12 @@ export class GraphView extends ItemView {
 
 	private currentShapeKey(): string {
 		const s = this.host.settings;
-		return JSON.stringify([s.activeLayout, s.shapeStrength, this.host.packs.version]);
+		return JSON.stringify([s.activeLayout, s.shapeStrength, s.shapeGuide, this.host.packs.version]);
 	}
 
 	/** The shape for the nodes now in the layout, or null when no pack layout with a shape is active. */
 	private buildShape(): ShapeSpec | null {
+		this.renderer?.setGuide(null);
 		const entry = this.activeLayout();
 		const sub = this.sub;
 		const s = this.host.settings;
@@ -498,14 +499,20 @@ export class GraphView extends ItemView {
 		const reach = 0.9 / shapeExtent(this.dim === 3 && shape.kind === 'spiral' ? layFlat(result.points) : result.points, this.dim);
 		const scale = (this.dim === 3 ? spacing * Math.cbrt(n) * 0.8 : spacing * Math.sqrt(n) * 0.28) * reach;
 		const nodeRegions = new Uint8Array(n).fill(255);
-		if (result.regionOf && shape.kind === 'volume') {
-			const queries: (Clause[][] | null)[] = shape.regions.map((r) => (r.match.trim() === '' ? null : parseSearch(r.match)));
+		const regions = shape.kind === 'volume' || shape.kind === 'points' ? shape.regions : [];
+		if (result.regionOf && regions.length > 0) {
+			const queries: (Clause[][] | null)[] = regions.map((r) => (r.match.trim() === '' ? null : parseSearch(r.match)));
+			// "top:N" ranks the notes being placed by their links (1 = most connected; equal counts keep their order).
+			const byLinks = Array.from({ length: n }, (_, i) => i).sort((a, b) => (this.degrees[sub.ids[b] as number] ?? 0) - (this.degrees[sub.ids[a] as number] ?? 0) || a - b);
+			const rank = new Int32Array(n);
+			byLinks.forEach((node, position) => (rank[node] = position + 1));
 			for (let i = 0; i < n; i++) {
 				const info = this.infoOf(sub.ids[i] as number);
 				if (!info) continue;
+				const ranked = { ...info, rank: rank[i] as number };
 				for (let r = 0; r < queries.length; r++) {
 					const q = queries[r];
-					if (q && matchesSearch(q, info)) {
+					if (q && matchesSearch(q, ranked)) {
 						nodeRegions[i] = r;
 						break;
 					}
@@ -519,7 +526,35 @@ export class GraphView extends ItemView {
 			targets = new Float32Array(result.points);
 			for (let i = 1; i < targets.length; i += 3) targets[i] = -(targets[i] as number);
 		}
-		return { targets, scale, targetRegions: result.regionOf ?? new Uint8Array(0), nodeRegions, strength: s.shapeStrength };
+		const place = (p: readonly number[]): [number, number, number] => [(p[0] as number) * scale, (this.dim === 2 ? -(p[1] as number) : (p[1] as number)) * scale, (p[2] as number) * scale];
+		// A region marked exclusive gives each of its notes a point of its own, the most connected first.
+		const anchors = new Float32Array(n * 3);
+		const anchored = new Uint8Array(n);
+		if (shape.kind === 'points') {
+			shape.regions.forEach((region, r) => {
+				if (!region.exclusive) return;
+				const members: number[] = [];
+				for (let i = 0; i < n; i++) if (nodeRegions[i] === r) members.push(i);
+				members.sort((a, b) => (this.degrees[sub.ids[b] as number] ?? 0) - (this.degrees[sub.ids[a] as number] ?? 0) || a - b);
+				members.slice(0, region.points.length).forEach((node, k) => {
+					const [x, y, z] = place(region.points[k] as number[]);
+					anchors[3 * node] = x;
+					anchors[3 * node + 1] = y;
+					anchors[3 * node + 2] = z;
+					anchored[node] = 1;
+				});
+			});
+		}
+		// The faint outline of the shape (flat view): when the layout asks for it, or the user switched it on.
+		if (this.dim === 2 && (entry.layout.guide || s.shapeGuide)) {
+			const g = new Float32Array((targets.length / 3) * 2);
+			for (let i = 0, j = 0; i + 2 < targets.length; i += 3, j += 2) {
+				g[j] = (targets[i] as number) * scale;
+				g[j + 1] = (targets[i + 1] as number) * scale;
+			}
+			this.renderer?.setGuide(g);
+		}
+		return { targets, scale, targetRegions: result.regionOf ?? new Uint8Array(0), nodeRegions, strength: s.shapeStrength, anchors, anchored };
 	}
 
 	private scheduleCacheSave(): void {

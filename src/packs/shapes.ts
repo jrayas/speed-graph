@@ -167,8 +167,18 @@ export function compileShape(pack: Pack, shape: ShapeDef, paramValues: Readonly<
 
 	switch (shape.kind) {
 		case 'points': {
-			for (const p of shape.points) out.push(p[0], p[1], p[2]);
-			return finish(out, null, [], 'The shape');
+			const tags: number[] = [];
+			for (const p of shape.points) {
+				out.push(p[0], p[1], p[2]);
+				tags.push(255);
+			}
+			shape.regions.forEach((region, index) => {
+				for (const p of region.points) {
+					out.push(p[0], p[1], p[2]);
+					tags.push(index);
+				}
+			});
+			return finish(out, shape.regions.length > 0 ? tags : null, shape.regions.map((r) => r.name), 'The shape');
 		}
 		case 'spiral': {
 			const { arms, twist, bulge, thickness } = shape;

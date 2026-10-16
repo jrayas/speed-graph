@@ -3,107 +3,444 @@
   "title": "Fast Graph pack (version 1)",
   "description": "Editor hints only. The plugin's own checker is the authority (docs/pack-format.md).",
   "type": "object",
-  "required": ["format", "version", "id"],
+  "required": [
+    "format",
+    "version",
+    "id"
+  ],
   "properties": {
-    "format": { "const": "fast-graph-pack" },
-    "version": { "const": 1 },
-    "id": { "$ref": "#/definitions/id" },
-    "name": { "type": "string", "maxLength": 80 },
-    "author": { "type": "string", "maxLength": 80 },
-    "license": { "type": "string", "maxLength": 80 },
-    "description": { "type": "string", "maxLength": 500 },
-    "params": { "type": "array", "maxItems": 16, "items": { "$ref": "#/definitions/param" } },
-    "themes": { "type": "array", "maxItems": 8, "items": { "$ref": "#/definitions/theme" } },
-    "shapes": { "type": "array", "maxItems": 8, "items": { "$ref": "#/definitions/shape" } },
-    "layouts": { "type": "array", "maxItems": 8, "items": { "$ref": "#/definitions/layout" } }
+    "format": {
+      "const": "fast-graph-pack"
+    },
+    "version": {
+      "const": 1
+    },
+    "id": {
+      "$ref": "#/definitions/id"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "license": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "params": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "#/definitions/param"
+      }
+    },
+    "themes": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/definitions/theme"
+      }
+    },
+    "shapes": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/definitions/shape"
+      }
+    },
+    "layouts": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/definitions/layout"
+      }
+    }
   },
   "definitions": {
-    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,47}$" },
-    "colour": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
-    "vec3": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "type": "number", "minimum": -4, "maximum": 4 } },
-    "range": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number", "minimum": -1000, "maximum": 1000 } },
-    "formula": { "type": "string", "maxLength": 400 },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,47}$"
+    },
+    "colour": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "vec3": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "type": "number",
+        "minimum": -4,
+        "maximum": 4
+      }
+    },
+    "range": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "number",
+        "minimum": -1000,
+        "maximum": 1000
+      }
+    },
+    "formula": {
+      "type": "string",
+      "maxLength": 400
+    },
     "param": {
       "type": "object",
-      "required": ["id"],
-      "properties": { "id": { "$ref": "#/definitions/id" }, "name": { "type": "string" }, "default": { "type": "number" }, "min": { "type": "number" }, "max": { "type": "number" }, "step": { "type": "number", "exclusiveMinimum": 0 } }
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "default": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "step": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
     },
     "theme": {
       "type": "object",
-      "required": ["id", "nodeColours"],
+      "required": [
+        "id",
+        "nodeColours"
+      ],
       "properties": {
-        "id": { "$ref": "#/definitions/id" },
-        "name": { "type": "string" },
-        "base": { "$ref": "#/definitions/colour" },
-        "nodeColours": { "type": "array", "minItems": 2, "maxItems": 8, "items": { "$ref": "#/definitions/colour" } },
-        "link": { "type": "object", "properties": { "colour": { "$ref": "#/definitions/colour" }, "alpha": { "type": "number", "minimum": 0, "maximum": 1 }, "curved": { "type": "boolean" }, "pulses": { "type": "boolean" } } },
-        "accent": { "$ref": "#/definitions/colour" },
-        "label": { "$ref": "#/definitions/colour" },
-        "glow": { "type": "boolean" },
-        "starfield": { "type": "boolean" },
-        "animated": { "type": "boolean" },
-        "backdrop": { "type": "object", "properties": { "colours": { "type": "array", "maxItems": 4, "items": { "$ref": "#/definitions/colour" } }, "seed": { "type": "integer", "minimum": 0, "maximum": 1000000 } } }
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "base": {
+          "$ref": "#/definitions/colour"
+        },
+        "nodeColours": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/definitions/colour"
+          }
+        },
+        "link": {
+          "type": "object",
+          "properties": {
+            "colour": {
+              "$ref": "#/definitions/colour"
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "curved": {
+              "type": "boolean"
+            },
+            "pulses": {
+              "type": "boolean"
+            }
+          }
+        },
+        "accent": {
+          "$ref": "#/definitions/colour"
+        },
+        "label": {
+          "$ref": "#/definitions/colour"
+        },
+        "glow": {
+          "type": "boolean"
+        },
+        "starfield": {
+          "type": "boolean"
+        },
+        "animated": {
+          "type": "boolean"
+        },
+        "backdrop": {
+          "type": "object",
+          "properties": {
+            "colours": {
+              "type": "array",
+              "maxItems": 4,
+              "items": {
+                "$ref": "#/definitions/colour"
+              }
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        }
       }
     },
     "solid": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "properties": {
-        "type": { "enum": ["sphere", "ellipsoid", "capsule", "box"] },
-        "at": { "$ref": "#/definitions/vec3" },
-        "from": { "$ref": "#/definitions/vec3" },
-        "to": { "$ref": "#/definitions/vec3" },
-        "radius": { "type": "number", "minimum": 0.001, "maximum": 4 },
-        "size": { "$ref": "#/definitions/vec3" },
-        "round": { "type": "number", "minimum": 0, "maximum": 1 }
+        "type": {
+          "enum": [
+            "sphere",
+            "ellipsoid",
+            "capsule",
+            "box"
+          ]
+        },
+        "at": {
+          "$ref": "#/definitions/vec3"
+        },
+        "from": {
+          "$ref": "#/definitions/vec3"
+        },
+        "to": {
+          "$ref": "#/definitions/vec3"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 4
+        },
+        "size": {
+          "$ref": "#/definitions/vec3"
+        },
+        "round": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
       }
     },
     "shape": {
       "type": "object",
-      "required": ["id", "kind"],
+      "required": [
+        "id",
+        "kind"
+      ],
       "properties": {
-        "id": { "$ref": "#/definitions/id" },
-        "name": { "type": "string" },
-        "kind": { "enum": ["spiral", "volume", "parametric", "implicit", "points"] },
-        "arms": { "type": "integer", "minimum": 1, "maximum": 8 },
-        "twist": { "type": "number", "minimum": 0, "maximum": 8 },
-        "bulge": { "type": "number", "minimum": 0, "maximum": 1 },
-        "thickness": { "type": "number", "minimum": 0, "maximum": 1 },
-        "smooth": { "type": "number", "minimum": 0, "maximum": 0.5 },
-        "solids": { "type": "array", "maxItems": 64, "items": { "$ref": "#/definitions/solid" } },
-        "regions": { "type": "array", "maxItems": 20, "items": { "type": "object", "required": ["name", "solids"], "properties": { "name": { "type": "string" }, "match": { "type": "string", "maxLength": 200 }, "solids": { "type": "array", "items": { "$ref": "#/definitions/solid" } } } } },
-        "t": { "$ref": "#/definitions/range" },
-        "u": { "$ref": "#/definitions/range" },
-        "v": { "$ref": "#/definitions/range" },
-        "x": { "$ref": "#/definitions/formula" },
-        "y": { "$ref": "#/definitions/formula" },
-        "z": { "$ref": "#/definitions/formula" },
-        "samples": { "type": "integer", "minimum": 50, "maximum": 20000 },
-        "fill": { "type": "object", "properties": { "depth": { "type": "number", "minimum": 0.01, "maximum": 2 }, "falloff": { "type": "number", "minimum": 0.01, "maximum": 2 } } },
-        "value": { "$ref": "#/definitions/formula" },
-        "bounds": { "type": "number", "minimum": 0.5, "maximum": 4 },
-        "resolution": { "type": "integer", "minimum": 16, "maximum": 64 },
-        "points": { "type": "array", "maxItems": 5000, "items": { "$ref": "#/definitions/vec3" } }
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "spiral",
+            "volume",
+            "parametric",
+            "implicit",
+            "points"
+          ]
+        },
+        "arms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "twist": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "bulge": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thickness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "smooth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5
+        },
+        "solids": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/definitions/solid"
+          }
+        },
+        "regions": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "match": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "solids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/solid"
+                }
+              },
+              "points": {
+                "type": "array",
+                "maxItems": 5000,
+                "items": {
+                  "$ref": "#/definitions/vec3"
+                }
+              }
+            }
+          }
+        },
+        "t": {
+          "$ref": "#/definitions/range"
+        },
+        "u": {
+          "$ref": "#/definitions/range"
+        },
+        "v": {
+          "$ref": "#/definitions/range"
+        },
+        "x": {
+          "$ref": "#/definitions/formula"
+        },
+        "y": {
+          "$ref": "#/definitions/formula"
+        },
+        "z": {
+          "$ref": "#/definitions/formula"
+        },
+        "samples": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 20000
+        },
+        "fill": {
+          "type": "object",
+          "properties": {
+            "depth": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 2
+            },
+            "falloff": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 2
+            }
+          }
+        },
+        "value": {
+          "$ref": "#/definitions/formula"
+        },
+        "bounds": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 4
+        },
+        "resolution": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 64
+        },
+        "points": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "$ref": "#/definitions/vec3"
+          }
+        }
       }
     },
     "layout": {
       "type": "object",
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "properties": {
-        "id": { "$ref": "#/definitions/id" },
-        "name": { "type": "string" },
-        "dimensions": { "enum": [2, 3] },
-        "shape": { "type": "string" },
-        "theme": { "type": "string" },
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "dimensions": {
+          "enum": [
+            2,
+            3
+          ]
+        },
+        "shape": {
+          "type": "string"
+        },
+        "theme": {
+          "type": "string"
+        },
         "forces": {
           "type": "object",
           "properties": {
-            "centre": { "type": "number", "minimum": 0, "maximum": 1 },
-            "repel": { "type": "number", "minimum": 0, "maximum": 20 },
-            "link": { "type": "number", "minimum": 0, "maximum": 1 },
-            "linkDistance": { "type": "number", "minimum": 10, "maximum": 200 },
-            "gravity": { "type": "number", "minimum": 0, "maximum": 1 },
-            "shapeStrength": { "type": "number", "minimum": 0, "maximum": 1 }
+            "centre": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "repel": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 20
+            },
+            "link": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "linkDistance": {
+              "type": "number",
+              "minimum": 10,
+              "maximum": 200
+            },
+            "gravity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "shapeStrength": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
           }
         }
       }

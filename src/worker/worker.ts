@@ -31,6 +31,10 @@ export interface ShapeSpec {
 	nodeRegions: Uint8Array;
 	/** 0 to 1. */
 	strength: number;
+	/** x, y, z per layout node: a spot of its own to be pulled straight to (used where `anchored` is 1). */
+	anchors: Float32Array;
+	/** One per layout node: 1 if the note has its own spot. */
+	anchored: Uint8Array;
 }
 
 export type WorkerRequest =
@@ -62,6 +66,7 @@ interface Engine {
 	release_node(id: number): void;
 	set_shape(targets: Float32Array, scale: number, regions: Uint8Array, strength: number): void;
 	set_node_regions(regions: Uint8Array): void;
+	set_anchors(anchors: Float32Array, flags: Uint8Array): void;
 	clear_shape(): void;
 	free(): void;
 }
@@ -120,6 +125,7 @@ scope.onmessage = (event) => {
 				else {
 					l.set_shape(shape.targets, shape.scale, shape.targetRegions, shape.strength);
 					l.set_node_regions(shape.nodeRegions);
+					l.set_anchors(shape.anchors, shape.anchored);
 				}
 				scope.postMessage({ type: 'layout-ok', id: request.id });
 				break;

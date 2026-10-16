@@ -134,3 +134,28 @@ test('exclude folders: parsing, whole-folder matching and the filter', () => {
 	const folderInput: FilterInput = { ...i, infoOf: (id) => (id === 3 ? info('Media/pic.png') : i.infoOf(id)) };
 	assert.deepEqual([...computeVisible(folderInput, { ...base, excludedFolders: ['media'] })], [1, 1, 1, 0, 1]);
 });
+
+test('search: degree comparisons and top:N (rank)', () => {
+	const hub: NodeInfo = { ...info('Hub.md'), degree: 12, rank: 1 };
+	const mid: NodeInfo = { ...info('Mid.md'), degree: 5, rank: 7 };
+	const leaf: NodeInfo = { ...info('Leaf.md'), degree: 1, rank: 90 };
+	const noInfo = info('Plain.md'); // no degree and no rank given
+	assert.ok(m('degree>=5', hub) && m('degree>=5', mid) && !m('degree>=5', leaf));
+	assert.ok(m('degree>5', hub) && !m('degree>5', mid));
+	assert.ok(m('degree<=1', leaf) && !m('degree<=1', mid));
+	assert.ok(m('degree<5', leaf) && !m('degree<5', mid));
+	assert.ok(m('degree=5', mid) && !m('degree=5', hub));
+	assert.ok(m('DEGREE>=0', leaf)); // a catch-all
+	assert.ok(m('top:1', hub) && !m('top:1', mid));
+	assert.ok(m('top:9', mid) && !m('top:9', leaf));
+	assert.ok(m('-top:9', leaf) && !m('-top:9', hub));
+	assert.ok(m('top:9 degree>=5', mid) && !m('top:9 degree>=6', mid));
+	assert.ok(m('top:1 OR degree<=1', leaf) && m('top:1 OR degree<=1', hub) && !m('top:1 OR degree<=1', mid));
+	assert.ok(!m('degree>=0', noInfo) && !m('top:5', noInfo)); // unknown: never matches
+	assert.ok(m('degree>=3 tag:#x', { ...hub, tags: ['#x'] }) && !m('degree>=3 tag:#x', hub));
+	// still being typed: ignored rather than treated as a word
+	assert.deepEqual(parseSearch('top:'), []);
+	assert.deepEqual(parseSearch('top:abc'), []);
+	assert.ok(m('"degree>=5"', { ...info('degree>=5 notes.md') })); // quoted means a plain phrase
+	assert.doesNotThrow(() => parseSearch('degree>= top: degree>=99999999999999999999'));
+});

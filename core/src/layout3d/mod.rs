@@ -48,6 +48,9 @@ pub struct Layout3 {
     shape: Option<ShapeField>,
     shape_strength: f64,
     node_region: Vec<u8>,
+    /// Own spot for a note: where it is pulled to directly (x, y, z per note) and whether it has one.
+    anchor: Vec<f64>,
+    anchored: Vec<bool>,
     repel_max2: f64,
     theta2: f64,
     tree: OctTree,
@@ -137,6 +140,8 @@ impl Layout3 {
             shape: None,
             shape_strength: 0.0,
             node_region: vec![NO_REGION; n],
+            anchor: vec![0.0; n * 3],
+            anchored: vec![false; n],
             repel_max2: f64::INFINITY,
             theta2: 0.81,
             tree: OctTree::new(),
@@ -187,10 +192,27 @@ impl Layout3 {
         }
     }
 
+    /// Gives some notes a spot of their own: `anchors` is `[x, y, z, ...]` per note and `flags` is 1 for the
+    /// notes that have one. Such a note is pulled straight to its spot instead of to the nearest target.
+    pub fn set_anchors(&mut self, anchors: &[f32], flags: &[u8]) {
+        for i in 0..self.n {
+            let has = flags.get(i).copied().unwrap_or(0) == 1 && anchors.len() >= 3 * i + 3 && anchors[3 * i..3 * i + 3].iter().all(|v| v.is_finite());
+            self.anchored[i] = has;
+            if has {
+                self.anchor[3 * i] = f64::from(anchors[3 * i]);
+                self.anchor[3 * i + 1] = f64::from(anchors[3 * i + 1]);
+                self.anchor[3 * i + 2] = f64::from(anchors[3 * i + 2]);
+            }
+        }
+    }
+
     /// Removes the shape.
     pub fn clear_shape(&mut self) {
         self.shape = None;
         self.shape_strength = 0.0;
+        for a in self.anchored.iter_mut() {
+            *a = false;
+        }
     }
 
     pub fn reheat(&mut self, alpha: f64) {
@@ -367,6 +389,17 @@ impl Layout3 {
         let k = self.shape_strength * (SHAPE_PULL_FLOOR + (1.0 - SHAPE_PULL_FLOOR) * self.alpha.min(1.0)) * SHAPE_PULL;
         let free = shape.spacing();
         for i in 0..self.n {
+            if self.anchored[i] {
+                let (dx, dy, dz) = (self.anchor[3 * i] - self.x[i], self.anchor[3 * i + 1] - self.y[i], self.anchor[3 * i + 2] - self.z[i]);
+                let d = (dx * dx + dy * dy + dz * dz).sqrt();
+                if d > 0.0 {
+                    let f = k.min(SHAPE_PULL_MAX_STEP);
+                    self.vx[i] += dx * f;
+                    self.vy[i] += dy * f;
+                    self.vz[i] += dz * f;
+                }
+                continue;
+            }
             if let Some(t) = shape.nearest(self.x[i], self.y[i], self.z[i], self.node_region[i]) {
                 let (dx, dy, dz) = (t[0] - self.x[i], t[1] - self.y[i], t[2] - self.z[i]);
                 let d = (dx * dx + dy * dy + dz * dz).sqrt();

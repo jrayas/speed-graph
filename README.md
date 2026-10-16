@@ -19,7 +19,7 @@ A graph view for Obsidian that stays smooth on very large vaults (10,000 notes a
 - **Motion effects** for the whole graph: heartbeat (with a lub-dub and an "active" mode), breathing, vibrate, a frightened flinch, panic, and a shockwave when you open or edit a note.
 - A **3D view** (WebGL2): drag to turn, scroll to zoom, right-drag to slide.
 - **Skins** drawn by code, not images: Galaxy and a stylised Brain.
-- **Shape layouts**: pull the graph into a heart, a spiral galaxy, a brain, a trefoil knot, or a shape from a pack you import.
+- **Shape layouts**: pull the graph into a heart, a spiral galaxy (flat or 3D), a brain, a trefoil knot, a spider, a spider web, a honeycomb, a **solar system** (your most-connected notes become the sun and eight planets on their own orbits; every other note is a star), or a shape from a pack you import. An optional faint dotted guide draws the shape behind the notes.
 - Brightness, colour, glow, label and 3D camera controls.
 
 Everything in the settings page has a short description. Extras never change the default graph.
@@ -50,7 +50,7 @@ Read this fairly: 8.3 ms is simply the display's refresh rate (no dropped frames
 - **Mobile is untested.** The plugin is not marked desktop-only, but I have not run it on iOS or Android. If the worker, WebAssembly or WebGL2 is unavailable on your device, the graph may not open; please report it.
 - Search matches names, paths and tags, **not note contents**, and has fewer operators than Obsidian's own search. Tags are not drawn as nodes.
 - The built-in graph's link and node options are not all copied.
-- Shapes: the heart, the spiral galaxy and the trefoil read well; the **brain is rough** (a rounded blob with a stem; its lobes are not distinct). Shapes were tuned on a small synthetic vault only.
+- Shapes: the heart, the spiral galaxy, the spider and the solar system read well; the spider web and the honeycomb are only readable with their dotted guide (notes sit on the lines only roughly); the **brain is rough** (a rounded blob with a stem; its lobes are not distinct). Shapes were tuned on a small synthetic vault only.
 - Zoomed-out bubbles show density on a grid, not real communities.
 - Not yet tested on real (non-synthetic) vaults beyond quick checks, or on older graphics hardware. 3D opens settle in about 20 s cold on 25,000 notes.
 

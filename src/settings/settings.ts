@@ -39,6 +39,8 @@ export interface GraphSettings {
 	activeLayout: string;
 	/** 0 to 1: how firmly notes are pulled into the shape of the active pack layout. */
 	shapeStrength: number;
+	/** Draw the active shape as a faint dotted guide in the flat view (a layout can ask for it too). */
+	shapeGuide: boolean;
 	/** Whole-graph motion: heartbeat, breathing, vibrate, scared. Off by default. */
 	motion: Motion;
 	/** 'default' (our current look), 'galaxy' or 'brain'. */
@@ -81,6 +83,7 @@ export const DEFAULT_SETTINGS: GraphSettings = {
 	look: { ...DEFAULT_LOOK },
 	activeLayout: '',
 	shapeStrength: 0.5,
+	shapeGuide: false,
 	motion: { ...DEFAULT_MOTION, speeds: { ...DEFAULT_MOTION.speeds } },
 	skin: 'default',
 	skinEffects: true,
@@ -140,6 +143,7 @@ export function mergeSettings(raw: unknown): GraphSettings {
 	out.look = mergeLook(data.look);
 	out.motion = mergeMotion(data.motion);
 	if (typeof data.rightButtonPan === 'boolean') out.rightButtonPan = data.rightButtonPan;
+	if (typeof data.shapeGuide === 'boolean') out.shapeGuide = data.shapeGuide;
 	out.drift = mergeDrift(typeof data.drift === 'object' ? data.drift : null);
 	out.electrons = mergeElectrons(typeof data.electrons === 'object' ? data.electrons : null);
 	if (typeof data.activeLayout === 'string') out.activeLayout = data.activeLayout.slice(0, 120);

@@ -67,6 +67,21 @@
         "gravity": 0.05,
         "shapeStrength": 1
       }
+    },
+    {
+      "id": "galaxy-2d",
+      "name": "Galaxy (2D)",
+      "dimensions": 2,
+      "shape": "spiral-galaxy",
+      "theme": "galaxy-theme",
+      "forces": {
+        "centre": 0.2,
+        "repel": 5,
+        "link": 0.2,
+        "linkDistance": 30,
+        "gravity": 0.05,
+        "shapeStrength": 1
+      }
     }
   ]
 }

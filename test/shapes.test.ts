@@ -150,3 +150,89 @@ test('layFlat turns a standing disc so it lies flat in 3D', () => {
 	}
 	assert.equal(layFlat(new Float32Array(0)).length, 0);
 });
+
+const pointsOf = (pack: Pack, id: string): number[][] => {
+	const r = compile(pack, id);
+	const out: number[][] = [];
+	for (let i = 0; i < r.points.length; i += 3) out.push([r.points[i] as number, r.points[i + 1] as number, r.points[i + 2] as number]);
+	return out;
+};
+const nearest = (p: number[], all: number[][]) => Math.min(...all.map((q) => Math.hypot(p[0]! - q[0]!, p[1]! - q[1]!)));
+
+test('spider: mirror-symmetric, eight legs reach out, a head above a larger body; web: spokes, rings, centred', () => {
+	const pack = load('spider');
+	const s = pointsOf(pack, 'spider-body');
+	assert.ok(s.length > 500 && s.length < 1000, `${s.length}`);
+	for (let i = 0; i < s.length; i += 7) assert.ok(nearest([-(s[i]![0]!), s[i]![1]!], s) < 0.03, 'left and right should mirror');
+	const reach = Math.max(...s.map((p) => Math.abs(p[0]!)));
+	assert.ok(reach > 0.9 && reach <= 1);
+	// legs: points far from the body on both sides, at four different heights each side
+	const tips = s.filter((p) => Math.abs(p[0]!) > 0.8);
+	assert.ok(tips.some((p) => p[1]! > 0.5) && tips.some((p) => p[1]! < -0.7));
+	const w = pointsOf(pack, 'spider-web');
+	assert.ok(w.length > 1200);
+	assert.ok(nearest([0, 0], w) < 0.03, 'the hub is at the centre');
+	assert.ok(Math.max(...w.map((p) => Math.hypot(p[0]!, p[1]!))) <= 1);
+	// 12 spokes: the points along the outer spokes fall in 12 evenly spaced directions
+	const sectors = new Array<number>(12).fill(0);
+	for (const p of w) if (Math.hypot(p[0]!, p[1]!) > 0.25 && Math.hypot(p[0]!, p[1]!) < 0.9) sectors[Math.floor(((Math.atan2(p[1]!, p[0]!) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI / 6))]!++;
+	assert.ok(Math.max(...sectors) / Math.min(...sectors) < 1.6, String(sectors));
+});
+
+test('honeycomb: every point sits on a cell wall of a 61-cell hexagonal patch', () => {
+	const h = pointsOf(load('honeycomb'), 'honeycomb-patch');
+	const R = 0.13;
+	const centres: number[][] = [];
+	for (let q = -4; q <= 4; q++) for (let r = Math.max(-4, -q - 4); r <= Math.min(4, -q + 4); r++) centres.push([1.5 * R * q, Math.sqrt(3) * R * (r + q / 2)]);
+	assert.equal(centres.length, 61);
+	for (const p of h) {
+		const d = nearest(p, centres);
+		assert.ok(d > R * Math.cos(Math.PI / 6) - 0.01 && d < R + 0.01, `${d}`); // between the wall's middle and its corner
+	}
+	assert.ok(h.length > 700 && h.length < 1300);
+	assert.ok(Math.max(...h.map((p) => Math.abs(p[0]!))) < 1 && Math.max(...h.map((p) => Math.abs(p[1]!))) < 1.05);
+});
+
+test('solar system: a sun, eight planets with clear space round each, and stars that keep out of that space', () => {
+	const pack = load('solar-system');
+	const shape = shapeOf(pack, 'solar');
+	assert.equal(shape.kind, 'points');
+	const r = compile(pack, 'solar');
+	assert.deepEqual(r.regionNames, ['Sun', 'Planets', 'Stars']);
+	const region = r.regionOf as Uint8Array;
+	const pts = (k: number) => {
+		const out: number[][] = [];
+		for (let i = 0; i < region.length; i++) if (region[i] === k) out.push([r.points[3 * i] as number, r.points[3 * i + 1] as number]);
+		return out;
+	};
+	const sun = pts(0);
+	const planets = pts(1);
+	const stars = pts(2);
+	assert.equal(sun.length, 1);
+	assert.equal(planets.length, 8); // one spot per planet, and the regions are exclusive so each planet note gets its own
+	assert.ok(stars.length > 1700);
+	assert.ok(sun.every((p) => Math.hypot(p[0]!, p[1]!) < 0.05));
+	// the eight planet spots: at least 0.25 apart from one another, each on its own orbit
+	const spots: number[][] = [];
+	for (const p of planets) spots.push([p[0]!, p[1]!]);
+	assert.ok(shape.kind === 'points' && shape.regions[0]!.exclusive && shape.regions[1]!.exclusive && !shape.regions[2]!.exclusive);
+	for (let i = 0; i < spots.length; i++) for (let j = i + 1; j < spots.length; j++) assert.ok(Math.hypot(spots[i]![0]! - spots[j]![0]!, spots[i]![1]! - spots[j]![1]!) > 0.25, `planets ${i} and ${j} are too close`);
+	const radii = spots.map((p) => Math.hypot(p[0]!, p[1]!)).sort((a, b) => a - b);
+	for (let i = 1; i < radii.length; i++) assert.ok(radii[i]! - radii[i - 1]! > 0.07, 'orbits overlap');
+	// clear space: no star within 0.13 of a planet, and none inside the sun's space
+	for (const s of stars) {
+		assert.ok(nearest(s, planets) > 0.13, 'a star is crowding a planet');
+		assert.ok(Math.hypot(s[0]!, s[1]!) > 0.1 || stars.length === 0, 'a star is inside the sun');
+		assert.ok(Math.hypot(s[0]!, s[1]!) <= 1.05);
+	}
+});
+
+test('flat galaxy layout exists and uses the same spiral as the 3D one', () => {
+	const pack = load('galaxy');
+	const flat = pack.layouts.find((l) => l.id === 'galaxy-2d');
+	const solid = pack.layouts.find((l) => l.id === 'galaxy-3d');
+	assert.ok(flat && solid);
+	assert.equal(flat?.dimensions, 2);
+	assert.equal(flat?.shape, solid?.shape);
+	assert.equal(flat?.theme, solid?.theme);
+});

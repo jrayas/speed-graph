@@ -134,6 +134,7 @@ export class FastGraphSettingTab extends PluginSettingTab {
 						control: { type: 'dropdown', key: 'activeLayout', options: this.layoutOptions() },
 					},
 					this.slider('Shape strength', 'How firmly notes are pulled into the shape. Low keeps more of the link structure; high follows the shape closely.', 'shapeStrength', RANGES.shapeStrength, () => this.s.activeLayout !== '', percent),
+					this.toggle('Show the shape as a faint guide', 'Draws the shape of the active layout as a faint dotted outline behind the notes (flat view). Line-art shapes such as a web or a honeycomb ask for it themselves. Off by default.', 'shapeGuide', () => this.s.activeLayout !== ''),
 					{
 						name: 'Import a pack',
 						desc: this.importReport || 'Paste the text of a pack file below, then choose this row. You can also type the path of a pack file that is in your vault. Packs hold colours, shapes and layouts, never code.',

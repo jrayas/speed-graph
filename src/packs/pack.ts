@@ -69,6 +69,15 @@ export interface Region {
 	solids: Solid[];
 }
 
+/** A named group of target points; notes whose `match` query fits go to these points only (see volume regions). */
+export interface PointRegion {
+	name: string;
+	match: string;
+	points: Vec3[];
+	/** Each note in this region gets one point of its own, in order of how connected it is (most connected first), instead of the nearest point. */
+	exclusive: boolean;
+}
+
 interface ShapeBase {
 	id: string;
 	name: string;
@@ -91,7 +100,7 @@ export type ShapeDef =
 			fill: { depth: number; falloff: number } | null;
 	  })
 	| (ShapeBase & { kind: 'implicit'; value: string; bounds: number; resolution: number })
-	| (ShapeBase & { kind: 'points'; points: Vec3[] });
+	| (ShapeBase & { kind: 'points'; points: Vec3[]; regions: PointRegion[] });
 
 export interface LayoutDef {
 	id: string;
@@ -102,6 +111,8 @@ export interface LayoutDef {
 	shape: string | null;
 	/** Id of a theme in this pack, or null. */
 	theme: string | null;
+	/** Show the shape as a faint dotted guide in the flat view. */
+	guide: boolean;
 }
 
 export interface Pack {
@@ -453,12 +464,28 @@ function shape(c: Ctx, raw: unknown, path: string, seen: Set<string>, params: Re
 			return { ...base, kind, value, bounds: num(c, r, 'bounds', path, 0.5, PACK_LIMITS.coordinate, 1.6), resolution: num(c, r, 'resolution', path, 16, 64, 48, { int: true }) };
 		}
 		case 'points': {
-			allow(c, r, path, ['id', 'name', 'kind', 'points']);
-			const items = list(c, r.points, at(path, 'points'), PACK_LIMITS.maxPoints);
-			if (items.length === 0) c.error(at(path, 'points'), 'Give at least one point');
-			const pts: Vec3[] = [];
-			for (let i = 0; i < items.length && c.errors.length < 200; i++) pts.push(vec3(c, items[i], `${at(path, 'points')}[${i}]`, -PACK_LIMITS.coordinate, PACK_LIMITS.coordinate, [0, 0, 0]));
-			return { ...base, kind, points: pts };
+			allow(c, r, path, ['id', 'name', 'kind', 'points', 'regions']);
+			const readPoints = (v: unknown, pp: string): Vec3[] => {
+				const items = list(c, v, pp, PACK_LIMITS.maxPoints);
+				const out: Vec3[] = [];
+				for (let i = 0; i < items.length && c.errors.length < 200; i++) out.push(vec3(c, items[i], `${pp}[${i}]`, -PACK_LIMITS.coordinate, PACK_LIMITS.coordinate, [0, 0, 0]));
+				return out;
+			};
+			const pts = readPoints(r.points, at(path, 'points'));
+			const regions: PointRegion[] = [];
+			list(c, r.regions, at(path, 'regions'), PACK_LIMITS.maxRegions).forEach((raw2, i) => {
+				const rp = `${at(path, 'regions')}[${i}]`;
+				const rr = rec(c, raw2, rp);
+				if (!rr) return;
+				allow(c, rr, rp, ['name', 'match', 'points', 'exclusive']);
+				const region: PointRegion = { exclusive: bool(c, rr, 'exclusive', rp, false), name: str(c, rr, 'name', rp, { required: true, max: PACK_LIMITS.maxName }), match: str(c, rr, 'match', rp, { max: 200, def: '' }), points: readPoints(rr.points, at(rp, 'points')) };
+				if (region.points.length === 0) c.error(at(rp, 'points'), 'A region needs at least one point');
+				regions.push(region);
+			});
+			const total = pts.length + regions.reduce((a2, g) => a2 + g.points.length, 0);
+			if (total === 0) c.error(at(path, 'points'), 'Give at least one point');
+			if (total > PACK_LIMITS.maxPoints) c.error(at(path, 'points'), `At most ${PACK_LIMITS.maxPoints} points in a shape, all regions together`);
+			return { ...base, kind, points: pts, regions };
 		}
 		default:
 			c.error(at(path, 'kind'), "Expected 'spiral', 'volume', 'parametric', 'implicit' or 'points'");
@@ -471,7 +498,7 @@ function shape(c: Ctx, raw: unknown, path: string, seen: Set<string>, params: Re
 function layout(c: Ctx, raw: unknown, path: string, seen: Set<string>): LayoutDef | null {
 	const r = rec(c, raw, path);
 	if (!r) return null;
-	allow(c, r, path, ['id', 'name', 'dimensions', 'forces', 'shape', 'theme']);
+	allow(c, r, path, ['id', 'name', 'dimensions', 'forces', 'shape', 'theme', 'guide']);
 	const out: LayoutDef = {
 		id: id(c, r, path, seen),
 		name: str(c, r, 'name', path, { max: PACK_LIMITS.maxName, def: '' }),
@@ -479,6 +506,7 @@ function layout(c: Ctx, raw: unknown, path: string, seen: Set<string>): LayoutDe
 		forces: { centre: 0.5, repel: 10, link: 1, linkDistance: 30, gravity: 0.2, shapeStrength: 0.5 },
 		shape: null,
 		theme: null,
+		guide: bool(c, r, 'guide', path, false),
 	};
 	if (!out.name) out.name = out.id;
 	if (r.dimensions !== undefined) {

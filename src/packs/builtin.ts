@@ -2,6 +2,9 @@ import galaxy from '../../docs/packs/galaxy.fgpack.json';
 import brain from '../../docs/packs/brain-stylised.fgpack.json';
 import heart from '../../docs/packs/heart.fgpack.json';
 import trefoil from '../../docs/packs/trefoil-knot.fgpack.json';
+import spider from '../../docs/packs/spider.fgpack.json';
+import honeycomb from '../../docs/packs/honeycomb.fgpack.json';
+import solar from '../../docs/packs/solar-system.fgpack.json';
 import { validatePack, type Pack } from './pack';
 
 /**
@@ -10,7 +13,7 @@ import { validatePack, type Pack } from './pack';
  */
 export function builtinPacks(): Pack[] {
 	const out: Pack[] = [];
-	for (const raw of [galaxy, brain, heart, trefoil] as unknown[]) {
+	for (const raw of [galaxy, brain, heart, trefoil, spider, honeycomb, solar] as unknown[]) {
 		const result = validatePack(raw);
 		if (result.ok) out.push(result.pack);
 		else console.error('[fast-graph] A built-in pack is invalid', result.errors);

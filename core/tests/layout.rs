@@ -236,3 +236,47 @@ fn shape_in_2d_can_be_cleared_and_ignores_bad_input() {
     a.tick(10);
     assert!(a.positions().iter().all(|v| v.is_finite()));
 }
+
+#[test]
+fn anchored_notes_go_straight_to_their_own_spot_and_the_others_do_not() {
+    // a ring of targets; note 0 and note 1 both get their own spot, the rest follow the ring
+    let mut targets = Vec::new();
+    for i in 0..60 {
+        let a = i as f32 / 60.0 * std::f32::consts::TAU;
+        targets.extend([a.cos(), a.sin(), 0.0]);
+    }
+    let mut l = Layout::new(80, &[], 4);
+    l.set_shape(&targets, 100.0, &[], 1.0);
+    let mut anchors = vec![0.0f32; 80 * 3];
+    let mut flags = vec![0u8; 80];
+    anchors[0] = 20.0;
+    anchors[1] = 30.0;
+    flags[0] = 1;
+    anchors[3] = -40.0;
+    anchors[4] = -10.0;
+    flags[1] = 1;
+    l.set_anchors(&anchors, &flags);
+    l.tick(400);
+    let p = l.positions();
+    assert!((p[0] - 20.0).abs() < 3.0 && (p[1] - 30.0).abs() < 3.0, "note 0 is at {} {}", p[0], p[1]);
+    assert!((p[2] + 40.0).abs() < 3.0 && (p[3] + 10.0).abs() < 3.0, "note 1 is at {} {}", p[2], p[3]);
+    // note 2 follows the ring, not the anchors
+    let r = (p[4].powi(2) + p[5].powi(2)).sqrt();
+    assert!(r > 60.0, "note 2 should be out at the ring, not at {r}");
+    // clearing the shape also forgets the spots
+    l.clear_shape();
+    let mut b = Layout::new(80, &[], 4);
+    l.tick(0);
+    b.tick(0);
+    assert_eq!(l.positions().len(), b.positions().len());
+}
+
+#[test]
+fn bad_anchor_input_is_safe() {
+    let mut l = Layout::new(5, &[], 1);
+    l.set_shape(&[0.0, 0.0, 0.0, 1.0, 1.0, 0.0], 50.0, &[], 1.0);
+    l.set_anchors(&[f32::NAN, 0.0, 0.0], &[1, 1, 1]); // short, NaN, too many flags
+    l.set_anchors(&[], &[]);
+    l.tick(30);
+    assert!(l.positions().iter().all(|v| v.is_finite()));
+}

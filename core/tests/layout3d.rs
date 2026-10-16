@@ -257,3 +257,20 @@ fn bad_shape_input_is_safe() {
     l.tick(50);
     assert!(l.positions().iter().all(|v| v.is_finite()));
 }
+
+#[test]
+fn anchored_notes_go_to_their_own_spot_in_3d() {
+    let mut l = Layout3::new(60, &ring_edges(60), 2);
+    l.set_shape(&plane_targets(), 60.0, &[], 1.0);
+    let mut anchors = vec![0.0f32; 60 * 3];
+    let mut flags = vec![0u8; 60];
+    anchors[0] = 10.0;
+    anchors[1] = -25.0;
+    anchors[2] = 15.0;
+    flags[0] = 1;
+    l.set_anchors(&anchors, &flags);
+    l.tick(400);
+    let p = l.positions();
+    assert!((p[0] - 10.0).abs() < 3.0 && (p[1] + 25.0).abs() < 3.0 && (p[2] - 15.0).abs() < 3.0, "{} {} {}", p[0], p[1], p[2]);
+    assert!(p.iter().all(|v| v.is_finite()));
+}
